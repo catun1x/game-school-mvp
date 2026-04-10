@@ -417,6 +417,14 @@ async def logout():
     response.delete_cookie("access_token")
     return response
 
+@app.get("/api/users")
+async def get_all_users():
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name, email, role, created_at FROM users")
+        users = cursor.fetchall()
+        return {"users": [dict(user) for user in users]}
+
 # ==================== ЗАПУСК ====================
 if __name__ == "__main__":
     import uvicorn
