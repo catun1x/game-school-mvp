@@ -34,6 +34,8 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .logo {
@@ -47,6 +49,7 @@ nav {
     display: flex;
     gap: 20px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .nav-links a {
@@ -77,6 +80,11 @@ nav {
     margin-bottom: 10px;
 }
 
+.card h4 {
+    color: #00d4ff;
+    margin-bottom: 10px;
+}
+
 /* Формы */
 .form-group {
     margin-bottom: 20px;
@@ -100,6 +108,7 @@ nav {
     font-size: 16px;
 }
 
+/* Кнопки */
 .btn {
     background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
     color: #fff;
@@ -109,6 +118,9 @@ nav {
     cursor: pointer;
     font-size: 16px;
     transition: transform 0.2s;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
 }
 
 .btn:hover {
@@ -119,7 +131,7 @@ nav {
     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
 }
 
-/* Сетка */
+/* Сетка для карточек */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -132,15 +144,21 @@ nav {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
 .search-bar input {
     flex: 1;
+    min-width: 200px;
     padding: 12px;
     border: 1px solid #333;
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.3);
     color: #fff;
+}
+
+.search-bar .btn {
+    padding: 12px 24px;
 }
 
 /* Алерты */
@@ -168,6 +186,7 @@ nav {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #333;
+    flex-wrap: wrap;
 }
 
 .avatar {
@@ -185,6 +204,8 @@ nav {
 table {
     width: 100%;
     border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
 }
 
 th, td {
@@ -197,14 +218,59 @@ th {
     color: #00d4ff;
 }
 
-/* Адаптив */
+/* Hero секция на главной */
+.hero {
+    text-align: center;
+    padding: 80px 0 60px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: #00d4ff;
+}
+
+.hero p {
+    font-size: 22px;
+    color: #ccc;
+    margin-bottom: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Адаптив для мобильных */
 @media (max-width: 768px) {
     .nav-container {
         flex-direction: column;
-        gap: 15px;
+        text-align: center;
     }
     
     .grid {
         grid-template-columns: 1fr;
+    }
+    
+    .hero h1 {
+        font-size: 36px;
+    }
+    
+    .hero p {
+        font-size: 18px;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 8px;
     }
 }
