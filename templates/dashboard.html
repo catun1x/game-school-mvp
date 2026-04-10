@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет — CoachHub</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">🎮 CoachHub</a>
+            <div class="nav-links">
+                <a href="/coaches">Тренеры</a>
+                <a href="/dashboard">Личный кабинет</a>
+                <a href="/logout">Выйти ({{ user.name }})</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="content">
+        <div style="text-align: center; padding: 40px;">⏳ Загрузка данных...</div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const [profileRes, bookingsRes] = await Promise.all([
+                    fetch('/api/profile'),
+                    fetch('/api/bookings')
+                ]);
+                
+                const profile = await profileRes.json();
+                const bookings = await bookingsRes.json();
+                
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = `
+                    <div class="profile-header">
+                        <div class="avatar">👤</div>
+                        <div>
+                            <h2>${escapeHtml(profile.user.name)}</h2>
+                            <p>📧 ${escapeHtml(profile.user.email)}</p>
+                            <p>🎭 Роль: ${profile.user.role === 'coach' ? 'Тренер' : 'Игрок'}</p>
+                            <p>📅 На сайте с: ${profile.user.created_at ? new Date(profile.user.created_at).toLocaleDateString() : 'недавно'}</p>
+                        </div>
+                    </div>
+                    
+                    <h3>📋 Мои записи на занятия</h3>
+                    ${!bookings || bookings.length === 0 ? 
+                        '<div class="card">😕 У вас пока нет записей. Перейдите к поиску тренеров!</div>' : 
+                        `<table>
+                            <thead>
+                                <tr><th>Занятие</th><th>Тренер</th><th>Цена</th><th>Статус</th><th>Дата записи</th></tr>
+                            </thead>
+                            <tbody>
+                                ${bookings.map(b => `
+                                    <tr>
+                                        <td>${escapeHtml(b.title)}</td>
+                                        <td>${escapeHtml(b.coach_name)}</td>
+                                        <td>${b.price} ₽</td>
+                                        <td>${b.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидание'}</td>
+                                        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>`
+                    }
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <a href="/coaches" class="btn">🎮 Найти ещё занятия</a>
+                    </div>
+                `;
+            } catch (error) {
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <h3>❌ Ошибка загрузки</h3>
+                        <p>Не удалось загрузить данные профиля. Попробуйте обновить страницу.</p>
+                        <a href="/" class="btn">Вернуться на главную</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        loadDashboard();
+    </script>
+</body>
+</html>

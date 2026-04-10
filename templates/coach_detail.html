@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль тренера — CoachHub</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">🎮 CoachHub</a>
+            <div class="nav-links">
+                <a href="/coaches">Тренеры</a>
+                {% if user %}
+                    <a href="/dashboard">Личный кабинет</a>
+                    <a href="/logout">Выйти ({{ user.name }})</a>
+                {% else %}
+                    <a href="/login">Вход</a>
+                    <a href="/register">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="content">
+        <div style="text-align: center; padding: 40px;">⏳ Загрузка данных...</div>
+    </div>
+
+    <script>
+        const coachId = {{ coach_id }};
+        
+        async function loadData() {
+            try {
+                const response = await fetch(`/api/coaches/${coachId}`);
+                if (!response.ok) throw new Error('Тренер не найден');
+                
+                const data = await response.json();
+                const coach = data.coach;
+                const sessions = data.sessions || [];
+                
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = `
+                    <div class="card">
+                        <h2>${escapeHtml(coach.name)}</h2>
+                        <p>🎮 ${escapeHtml(coach.game || 'Любая игра')}</p>
+                        <p>⭐ Рейтинг: ${coach.rating || 'Новый'} / 5.0</p>
+                        <p>💰 ${coach.price_per_hour || 'Договорная'} ₽/час</p>
+                        <p>📅 Опыт: ${coach.experience_years || 0} лет</p>
+                        <p>📝 ${escapeHtml(coach.description || 'Нет описания')}</p>
+                    </div>
+                    
+                    <h3>📅 Доступные занятия</h3>
+                    ${sessions.length === 0 ? 
+                        '<div class="card">😕 Нет доступных занятий</div>' : 
+                        `<div class="grid">
+                            ${sessions.map(session => `
+                                <div class="card">
+                                    <h4>${escapeHtml(session.title)}</h4>
+                                    <p>${escapeHtml(session.description || '')}</p>
+                                    <p>💰 ${session.price} ₽</p>
+                                    <p>⏱️ ${session.duration} мин</p>
+                                    ${session.start_time ? `<p>📅 ${new Date(session.start_time).toLocaleString()}</p>` : ''}
+                                    <a href="/booking/${session.id}" class="btn" style="margin-top: 15px; display: inline-block;">Записаться →</a>
+                                </div>
+                            `).join('')}
+                        </div>`
+                    }
+                `;
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <h3>❌ Ошибка</h3>
+                        <p>${error.message}</p>
+                        <a href="/coaches" class="btn">Вернуться к списку тренеров</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>

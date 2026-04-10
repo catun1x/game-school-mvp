@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoachHub — Платформа для поиска тренеров по играм</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">🎮 CoachHub</a>
+            <div class="nav-links">
+                <a href="/coaches">Тренеры</a>
+                {% if user %}
+                    <a href="/dashboard">Личный кабинет</a>
+                    <a href="/logout">Выйти ({{ user.name }})</a>
+                {% else %}
+                    <a href="/login">Вход</a>
+                    <a href="/register">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="text-align: center; padding: 80px 0 60px;">
+            <h1 style="font-size: 52px; margin-bottom: 20px;">
+                Найди <span style="color: #00d4ff;">профессионального тренера</span>
+            </h1>
+            <p style="font-size: 22px; color: #ccc; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                CS2 · Dota 2 · Valorant · LoL · и другие соревновательные игры
+            </p>
+            <a href="/coaches" class="btn" style="font-size: 18px; padding: 14px 40px;">Найти тренера →</a>
+        </div>
+
+        <div class="grid" style="margin: 60px 0;">
+            <div class="card">
+                <h3>🎯 Индивидуальный подход</h3>
+                <p>Разбор ваших демок, анализ ошибок и персональный план тренировок от опытных наставников</p>
+            </div>
+            <div class="card">
+                <h3>📊 Отслеживание прогресса</h3>
+                <p>Статистика вашего роста, достижения и история занятий в личном кабинете</p>
+            </div>
+            <div class="card">
+                <h3>🏆 Проверенные тренеры</h3>
+                <p>Только опытные наставники с реальными результатами учеников и высоким рейтингом</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
