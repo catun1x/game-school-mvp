@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренеры — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -14,7 +13,7 @@
                 <a href="/coaches">Тренеры</a>
                 {% if user %}
                     <a href="/dashboard">Личный кабинет</a>
-                    <a href="/logout">Выйти ({{ user.name }})</a>
+                    <a href="#" onclick="logout()">🚪 Выйти ({{ user.name }})</a>
                 {% else %}
                     <a href="/login">Вход</a>
                     <a href="/register">Регистрация</a>
@@ -28,11 +27,11 @@
         
         <div class="search-bar">
             <input type="text" id="gameFilter" placeholder="Поиск по игре (CS2, Dota 2, Valorant...)" value="{{ game_filter }}">
-            <button class="btn" id="searchBtn">Поиск</button>
+            <button class="btn" onclick="searchCoaches()">Поиск</button>
         </div>
 
         <div id="coachesList" class="grid">
-            <div style="text-align: center; padding: 40px;">Загрузка...</div>
+            <div>Загрузка...</div>
         </div>
     </div>
 
@@ -47,37 +46,32 @@
                 
                 const container = document.getElementById('coachesList');
                 if (!coaches || coaches.length === 0) {
-                    container.innerHTML = '<div class="card">😕 Тренеры не найдены. Попробуйте изменить поиск.</div>';
+                    container.innerHTML = '<div class="card">😕 Тренеры не найдены. Зарегистрируйтесь как тренер или добавьте тестовых.</div>';
                     return;
                 }
                 
                 container.innerHTML = coaches.map(coach => `
                     <div class="card">
-                        <h3>${escapeHtml(coach.name)}</h3>
-                        <p>🎮 ${escapeHtml(coach.game || 'Любая игра')}</p>
-                        <p>⭐ ${coach.rating || 'Новый'} / 5.0</p>
+                        <h3>${coach.name}</h3>
+                        <p>🎮 ${coach.game || 'Любая игра'}</p>
+                        <p>⭐ ${coach.rating || 'Новый'}</p>
                         <p>💰 ${coach.price_per_hour || 'Договорная'} ₽/час</p>
-                        <p>📅 Опыт: ${coach.experience_years || 0} лет</p>
-                        <a href="/coaches/${coach.id}" class="btn" style="margin-top: 15px; display: inline-block;">Подробнее →</a>
+                        <a href="/coaches/${coach.id}" class="btn">Подробнее →</a>
                     </div>
                 `).join('');
             } catch (error) {
-                const container = document.getElementById('coachesList');
-                container.innerHTML = '<div class="card">❌ Ошибка загрузки данных. Проверьте соединение с сервером.</div>';
+                document.getElementById('coachesList').innerHTML = '<div class="card">❌ Ошибка загрузки</div>';
             }
         }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function searchCoaches() {
+            loadCoaches();
         }
         
-        document.getElementById('searchBtn').addEventListener('click', loadCoaches);
-        document.getElementById('gameFilter').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loadCoaches();
-        });
+        async function logout() {
+            await fetch('/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
         
         loadCoaches();
     </script>
