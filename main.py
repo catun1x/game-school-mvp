@@ -1,19 +1,19 @@
-from fastapi import FastAPI, HTTPException, Depends, status, Request, Form
+from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 import sqlite3
-import os
-from passlib.context import CryptContext
-from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from contextlib import contextmanager
+from passlib.context import CryptContext
+from jose import JWTError, jwt
 
-app = FastAPI(title="Gaming Coach Platform")
+# ==================== НАСТРОЙКИ ====================
+app = FastAPI(title="Game School MVP")
 
-# Настройка статики и шаблонов
+# Подключаем статику (CSS) и шаблоны (HTML)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -23,7 +23,7 @@ SECRET_KEY = "your-secret-key-change-in-production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 дней
 
-# База данных
+# ==================== БАЗА ДАННЫХ ====================
 DATABASE_PATH = "database.db"
 
 @contextmanager
@@ -80,7 +80,7 @@ def init_db():
             )
         """)
         
-        # Таблица курсов (занятий)
+        # Таблица занятий
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,7 +114,7 @@ def init_db():
         
         conn.commit()
     
-    # Добавление тестовых данных
+    # Добавляем тестовые данные
     create_test_data()
 
 def create_test_data():
@@ -126,8 +126,9 @@ def create_test_data():
         if cursor.fetchone()[0] > 0:
             return
         
-        # Тестовый тренер 1
         password_hash = pwd_context.hash("test123")
+        
+        # Тренер 1 (CS2)
         cursor.execute("""
             INSERT INTO users (name, email, password_hash, role)
             VALUES (?, ?, ?, ?)
@@ -137,9 +138,9 @@ def create_test_data():
         cursor.execute("""
             INSERT INTO coach_profiles (user_id, description, experience_years, game, rating, price_per_hour)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (coach1_id, "Профессиональный тренер по CS2, опыт игры на профессиональной сцене", 5, "CS2", 4.9, 1500))
+        """, (coach1_id, "Профессиональный тренер по CS2, опыт на профессиональной сцене", 5, "CS2", 4.9, 1500))
         
-        # Тестовый тренер 2
+        # Тренер 2 (Dota 2)
         cursor.execute("""
             INSERT INTO users (name, email, password_hash, role)
             VALUES (?, ?, ?, ?)
@@ -149,9 +150,9 @@ def create_test_data():
         cursor.execute("""
             INSERT INTO coach_profiles (user_id, description, experience_years, game, rating, price_per_hour)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (coach2_id, "Тренер по Dota 2, помогаю поднять MMR с 2000 до 5000+", 3, "Dota 2", 4.8, 1200))
+        """, (coach2_id, "Тренер по Dota 2, помогаю поднять MMR", 3, "Dota 2", 4.8, 1200))
         
-        # Тестовый игрок
+        # Игрок
         cursor.execute("""
             INSERT INTO users (name, email, password_hash, role)
             VALUES (?, ?, ?, ?)
@@ -163,34 +164,20 @@ def create_test_data():
             VALUES (?, ?, ?, ?)
         """, (player_id, "IvanPro", "Средний", "CS2"))
         
-        # Тестовые занятия
+        # Занятия
         cursor.execute("""
             INSERT INTO sessions (coach_id, title, description, game, duration, price, start_time, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (coach1_id, "Индивидуальная тренировка CS2", "Разбор демок, отработка aim, тактика", "CS2", 60, 1500, datetime.now() + timedelta(days=1), "available"))
+        """, (coach1_id, "Индивидуальная тренировка CS2", "Разбор демок, отработка aim", "CS2", 60, 1500, datetime.now() + timedelta(days=1), "available"))
         
         cursor.execute("""
             INSERT INTO sessions (coach_id, title, description, game, duration, price, start_time, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (coach2_id, "Dota 2: повышение MMR", "Анализ пиков, позиционирование, макро-стратегия", "Dota 2", 90, 1200, datetime.now() + timedelta(days=2), "available"))
+        """, (coach2_id, "Dota 2: повышение MMR", "Анализ пиков, позиционирование", "Dota 2", 90, 1200, datetime.now() + timedelta(days=2), "available"))
         
         conn.commit()
 
-# Pydantic модели
-class UserRegister(BaseModel):
-    name: str
-    email: str
-    password: str
-    role: str = "player"
-
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
-class BookingCreate(BaseModel):
-    session_id: int
-
-# Вспомогательные функции
+# ==================== ФУНКЦИИ АВТОРИЗАЦИИ ====================
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -223,7 +210,21 @@ def get_current_user(request: Request):
         user = cursor.fetchone()
         return dict(user) if user else None
 
-# API endpoints
+# ==================== PYDANTIC МОДЕЛИ ====================
+class UserRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "player"
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class BookingCreate(BaseModel):
+    session_id: int
+
+# ==================== API ЭНДПОИНТЫ ====================
 @app.post("/api/register")
 async def register(user: UserRegister):
     with get_db() as conn:
@@ -366,7 +367,7 @@ async def get_profile(request: Request):
         
         return {"user": user, "profile": dict(profile) if profile else None}
 
-# HTML страницы
+# ==================== HTML СТРАНИЦЫ ====================
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     user = get_current_user(request)
@@ -416,7 +417,7 @@ async def logout():
     response.delete_cookie("access_token")
     return response
 
-# Запуск
+# ==================== ЗАПУСК ====================
 if __name__ == "__main__":
     import uvicorn
     init_db()
