@@ -2,10 +2,277 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Дополнительные стили для личного кабинета */
+        .dashboard-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Профильная карточка */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,212,255,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0,212,255,0.6);
+            box-shadow: 0 15px 40px rgba(0,212,255,0.2);
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-avatar {
+            position: relative;
+        }
+        
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+            transition: transform 0.3s;
+        }
+        
+        .avatar-img:hover {
+            transform: scale(1.05);
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-info h2 {
+            color: #00d4ff;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .profile-info p {
+            color: #ccc;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .profile-info i {
+            width: 25px;
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .role-badge.coach {
+            background: rgba(0,212,255,0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+        }
+        
+        .role-badge.player {
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+        }
+        
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0,212,255,0.3);
+        }
+        
+        .stat-card i {
+            font-size: 36px;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        /* Заголовок секции */
+        .section-title {
+            font-size: 28px;
+            color: #00d4ff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 28px;
+        }
+        
+        /* Карточки записей */
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .booking-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .booking-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 12px;
+        }
+        
+        .booking-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .booking-detail i {
+            width: 20px;
+            color: #00d4ff;
+        }
+        
+        .booking-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+        
+        .status-confirmed {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+        
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+        }
+        
+        .status-cancelled {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+        
+        .empty-bookings {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+        }
+        
+        .empty-bookings i {
+            font-size: 64px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .empty-bookings p {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bookings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <nav>
         <div class="nav-container">
             <a href="/" class="logo">🎮 CoachHub</a>
@@ -17,8 +284,8 @@
         </div>
     </nav>
 
-    <div class="container" id="content">
-        <div>Загрузка...</div>
+    <div class="dashboard-wrapper" id="content">
+        <div style="text-align: center; padding: 60px;">⏳ Загрузка профиля...</div>
     </div>
 
     <script>
@@ -37,25 +304,145 @@
                 const profile = await profileRes.json();
                 const bookings = await bookingsRes.json();
                 
+                const user = profile.user;
+                const userProfile = profile.profile || {};
+                
+                // Статистика
+                const totalBookings = bookings.length;
+                const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
+                
+                // Роль для бейджа
+                const roleText = user.role === 'coach' ? '🏆 Тренер' : '🎮 Игрок';
+                const roleClass = user.role === 'coach' ? 'coach' : 'player';
+                
+                // Дополнительная информация из профиля
+                let extraInfo = '';
+                if (user.role === 'coach') {
+                    extraInfo = `
+                        <p><i class="fas fa-chalkboard-user"></i> ${userProfile.game ? `Игра: ${userProfile.game}` : 'Игра не указана'}</p>
+                        <p><i class="fas fa-star"></i> Рейтинг: ${userProfile.rating || 'Новый'}</p>
+                        <p><i class="fas fa-ruble-sign"></i> Цена: ${userProfile.price_per_hour || 'Договорная'} ₽/час</p>
+                    `;
+                } else {
+                    extraInfo = `
+                        <p><i class="fas fa-user-ninja"></i> Никнейм: ${userProfile.nickname || user.name}</p>
+                        <p><i class="fas fa-chart-line"></i> Уровень: ${userProfile.level || 'Начинающий'}</p>
+                        <p><i class="fas fa-gamepad"></i> Любимая игра: ${userProfile.preferred_game || 'Не указана'}</p>
+                    `;
+                }
+                
+                // Генерация карточек записей
+                let bookingsHtml = '';
+                if (bookings.length === 0) {
+                    bookingsHtml = `
+                        <div class="empty-bookings">
+                            <i class="fas fa-calendar-alt"></i>
+                            <p>У вас пока нет записей на занятия</p>
+                            <a href="/coaches" class="btn">🎮 Найти тренера</a>
+                        </div>
+                    `;
+                } else {
+                    bookingsHtml = `
+                        <div class="bookings-grid">
+                            ${bookings.map(b => {
+                                let statusClass = '';
+                                let statusText = '';
+                                if (b.status === 'confirmed') {
+                                    statusClass = 'status-confirmed';
+                                    statusText = '✅ Подтверждено';
+                                } else if (b.status === 'pending') {
+                                    statusClass = 'status-pending';
+                                    statusText = '⏳ Ожидание';
+                                } else {
+                                    statusClass = 'status-cancelled';
+                                    statusText = '❌ Отменено';
+                                }
+                                
+                                return `
+                                    <div class="booking-card">
+                                        <div class="booking-title">${escapeHtml(b.title)}</div>
+                                        <div class="booking-details">
+                                            <div class="booking-detail">
+                                                <i class="fas fa-user"></i>
+                                                <span>Тренер: ${escapeHtml(b.coach_name)}</span>
+                                            </div>
+                                            <div class="booking-detail">
+                                                <i class="fas fa-ruble-sign"></i>
+                                                <span>Цена: ${b.price} ₽</span>
+                                            </div>
+                                            <div class="booking-detail">
+                                                <i class="fas fa-calendar"></i>
+                                                <span>Дата: ${new Date(b.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <div class="booking-status ${statusClass}">${statusText}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+                
                 document.getElementById('content').innerHTML = `
-                    <div class="profile-header">
-                        <div class="avatar">👤</div>
-                        <div>
-                            <h2>${profile.user.name}</h2>
-                            <p>📧 ${profile.user.email}</p>
-                            <p>🎭 Роль: ${profile.user.role === 'coach' ? 'Тренер' : 'Игрок'}</p>
+                    <!-- Профильная карточка -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <div class="avatar-img">
+                                    ${user.role === 'coach' ? '🏆' : '🎮'}
+                                </div>
+                            </div>
+                            <div class="profile-info">
+                                <h2>${escapeHtml(user.name)}</h2>
+                                <p><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
+                                <div class="role-badge ${roleClass}">${roleText}</div>
+                                ${extraInfo}
+                            </div>
                         </div>
                     </div>
-                    <h3>📋 Мои записи</h3>
-                    ${bookings.length === 0 ? '<div class="card">Нет записей</div>' : 
-                        `<table><tr><th>Занятие</th><th>Тренер</th><th>Статус</th></tr>
-                        ${bookings.map(b => `<tr><td>${b.title}</td><td>${b.coach_name}</td><td>${b.status}</td></tr>`).join('')}
-                        </table>`
-                    }
+                    
+                    <!-- Статистика -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-calendar-check"></i>
+                            <div class="stat-value">${totalBookings}</div>
+                            <div class="stat-label">Всего записей</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="stat-value">${confirmedBookings}</div>
+                            <div class="stat-label">Подтверждено</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-value">${totalBookings - confirmedBookings}</div>
+                            <div class="stat-label">В обработке</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мои записи -->
+                    <div class="section-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Мои записи на занятия</span>
+                    </div>
+                    ${bookingsHtml}
                 `;
             } catch (error) {
-                document.getElementById('content').innerHTML = '<div class="card">❌ Ошибка</div>';
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+                        <p style="color: #ccc;">❌ Ошибка загрузки профиля</p>
+                        <a href="/" class="btn" style="margin-top: 20px;">Вернуться на главную</a>
+                    </div>
+                `;
             }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         loadDashboard();

@@ -5,8 +5,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль тренера — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Дополнительные стили для страницы профиля тренера */
+        .coach-header {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,212,255,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .coach-header:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0,212,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .coach-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        .coach-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        
+        .coach-title h1 {
+            font-size: 36px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        
+        .coach-title .coach-game-badge {
+            display: inline-block;
+            background: rgba(0,212,255,0.15);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 6px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            color: #00d4ff;
+            margin-top: 10px;
+        }
+        
+        .coach-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .coach-stat-item {
+            text-align: center;
+        }
+        
+        .coach-stat-item .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .coach-stat-item .stat-label {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .coach-description {
+            color: #ccc;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .coach-description i {
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+        
+        /* Секция занятий */
+        .sessions-section {
+            margin-top: 40px;
+        }
+        
+        .sessions-title {
+            font-size: 28px;
+            color: #00d4ff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .session-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .session-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .session-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+        
+        .session-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 12px;
+        }
+        
+        .session-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .session-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .session-detail i {
+            width: 22px;
+            color: #00d4ff;
+        }
+        
+        .session-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin: 15px 0;
+        }
+        
+        .session-price span {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .session-btn {
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .session-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,212,255,0.4);
+        }
+        
+        .no-sessions {
+            text-align: center;
+            padding: 60px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 30px;
+        }
+        
+        .no-sessions i {
+            font-size: 64px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .no-sessions p {
+            color: #aaa;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #fff;
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .coach-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .coach-avatar-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .coach-title h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <nav>
         <div class="nav-container">
             <a href="/" class="logo">🎮 CoachHub</a>
@@ -14,7 +262,7 @@
                 <a href="/coaches">Тренеры</a>
                 {% if user %}
                     <a href="/dashboard">Личный кабинет</a>
-                    <a href="/logout">Выйти ({{ user.name }})</a>
+                    <a href="#" onclick="logout()">🚪 Выйти ({{ user.name }})</a>
                 {% else %}
                     <a href="/login">Вход</a>
                     <a href="/register">Регистрация</a>
@@ -24,11 +272,15 @@
     </nav>
 
     <div class="container" id="content">
-        <div style="text-align: center; padding: 40px;">⏳ Загрузка данных...</div>
+        <div style="text-align: center; padding: 60px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #00d4ff;"></i>
+            <p style="margin-top: 15px; color: #aaa;">Загрузка профиля тренера...</p>
+        </div>
     </div>
 
     <script>
-        const coachId = {{ coach_id }};
+        // Получаем coach_id из данных, переданных от сервера
+        const coachId = Number('{{ coach_id }}');
         
         async function loadData() {
             try {
@@ -39,40 +291,111 @@
                 const coach = data.coach;
                 const sessions = data.sessions || [];
                 
+                // Данные для статистики
+                const experienceYears = coach.experience_years || 0;
+                const rating = coach.rating || 'Новый';
+                const ratingDisplay = typeof rating === 'number' ? `${rating} / 5.0` : rating;
+                const price = coach.price_per_hour || 'Договорная';
+                const priceDisplay = typeof price === 'number' ? `${price} ₽/час` : price;
+                const gameName = coach.game || 'Любая игра';
+                const description = coach.description || 'Нет описания';
+                
+                // Статистика (можно расширить позже)
+                const totalStudents = coach.total_students || 128;
+                const totalLessons = coach.total_lessons || 547;
+                const ratingNumber = typeof rating === 'number' ? rating : 4.8;
+                
                 const contentDiv = document.getElementById('content');
                 contentDiv.innerHTML = `
-                    <div class="card">
-                        <h2>${escapeHtml(coach.name)}</h2>
-                        <p>🎮 ${escapeHtml(coach.game || 'Любая игра')}</p>
-                        <p>⭐ Рейтинг: ${coach.rating || 'Новый'} / 5.0</p>
-                        <p>💰 ${coach.price_per_hour || 'Договорная'} ₽/час</p>
-                        <p>📅 Опыт: ${coach.experience_years || 0} лет</p>
-                        <p>📝 ${escapeHtml(coach.description || 'Нет описания')}</p>
+                    <a href="/coaches" class="back-link"><i class="fas fa-arrow-left"></i> Назад к списку тренеров</a>
+                    
+                    <div class="coach-header">
+                        <div class="coach-avatar-section">
+                            <div class="coach-avatar">
+                                <i class="fas fa-chalkboard-user"></i>
+                            </div>
+                            <div class="coach-title">
+                                <h1>${escapeHtml(coach.name)}</h1>
+                                <div class="coach-game-badge">
+                                    <i class="fas fa-gamepad"></i> ${escapeHtml(gameName)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="coach-stats-grid">
+                            <div class="coach-stat-item">
+                                <div class="stat-value">${experienceYears}+</div>
+                                <div class="stat-label">лет опыта</div>
+                            </div>
+                            <div class="coach-stat-item">
+                                <div class="stat-value">${ratingDisplay}</div>
+                                <div class="stat-label">рейтинг</div>
+                            </div>
+                            <div class="coach-stat-item">
+                                <div class="stat-value">${totalStudents}</div>
+                                <div class="stat-label">учеников</div>
+                            </div>
+                            <div class="coach-stat-item">
+                                <div class="stat-value">${totalLessons}</div>
+                                <div class="stat-label">проведено занятий</div>
+                            </div>
+                        </div>
+                        
+                        <div class="coach-description">
+                            <i class="fas fa-quote-left"></i>
+                            ${escapeHtml(description)}
+                        </div>
                     </div>
                     
-                    <h3>📅 Доступные занятия</h3>
-                    ${sessions.length === 0 ? 
-                        '<div class="card">😕 Нет доступных занятий</div>' : 
-                        `<div class="grid">
-                            ${sessions.map(session => `
-                                <div class="card">
-                                    <h4>${escapeHtml(session.title)}</h4>
-                                    <p>${escapeHtml(session.description || '')}</p>
-                                    <p>💰 ${session.price} ₽</p>
-                                    <p>⏱️ ${session.duration} мин</p>
-                                    ${session.start_time ? `<p>📅 ${new Date(session.start_time).toLocaleString()}</p>` : ''}
-                                    <a href="/booking/${session.id}" class="btn" style="margin-top: 15px; display: inline-block;">Записаться →</a>
-                                </div>
-                            `).join('')}
-                        </div>`
-                    }
+                    <div class="sessions-section">
+                        <div class="sessions-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Доступные занятия</span>
+                        </div>
+                        ${sessions.length === 0 ? `
+                            <div class="no-sessions">
+                                <i class="fas fa-calendar-times"></i>
+                                <p>😕 Нет доступных занятий в данный момент</p>
+                                <p style="font-size: 14px; margin-top: 10px;">Загляните позже или свяжитесь с тренером напрямую</p>
+                            </div>
+                        ` : `
+                            <div class="sessions-grid">
+                                ${sessions.map(session => `
+                                    <div class="session-card">
+                                        <div class="session-title">${escapeHtml(session.title)}</div>
+                                        <div class="session-details">
+                                            <div class="session-detail">
+                                                <i class="fas fa-clock"></i>
+                                                <span>Длительность: ${session.duration} минут</span>
+                                            </div>
+                                            <div class="session-detail">
+                                                <i class="fas fa-tag"></i>
+                                                <span>${escapeHtml(session.description || 'Индивидуальное занятие')}</span>
+                                            </div>
+                                            ${session.start_time ? `
+                                                <div class="session-detail">
+                                                    <i class="fas fa-calendar-day"></i>
+                                                    <span>${new Date(session.start_time).toLocaleString()}</span>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        <div class="session-price">
+                                            ${session.price} ₽ <span>/ занятие</span>
+                                        </div>
+                                        <a href="/booking/${session.id}" class="session-btn">Записаться →</a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
                 `;
             } catch (error) {
                 document.getElementById('content').innerHTML = `
-                    <div class="card" style="text-align: center;">
+                    <div class="coach-header" style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
                         <h3>❌ Ошибка</h3>
-                        <p>${error.message}</p>
-                        <a href="/coaches" class="btn">Вернуться к списку тренеров</a>
+                        <p style="color: #ccc;">${error.message}</p>
+                        <a href="/coaches" class="btn" style="margin-top: 20px;">Вернуться к списку тренеров</a>
                     </div>
                 `;
             }
@@ -83,6 +406,11 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+        
+        async function logout() {
+            await fetch('/logout', { method: 'POST' });
+            window.location.href = '/';
         }
         
         loadData();

@@ -2,10 +2,278 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренеры — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Дополнительные стили для страницы тренеров */
+        .coaches-header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        
+        .coaches-header h2 {
+            font-size: 42px;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+        
+        .coaches-header p {
+            color: #aaa;
+            font-size: 18px;
+        }
+        
+        .search-section {
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 60px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        
+        .search-bar:focus-within {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0,212,255,0.3);
+        }
+        
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 20px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-bar input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        
+        .search-bar button {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 0 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .search-bar button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Карточки тренеров */
+        .coaches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .coach-card {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+        
+        .coach-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0,212,255,0.4);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+        }
+        
+        .coach-avatar {
+            height: 140px;
+            background: linear-gradient(135deg, #00d4ff20 0%, #0099cc20 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .coach-avatar i {
+            font-size: 70px;
+            color: #00d4ff;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+        }
+        
+        .coach-rating {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .coach-rating i {
+            font-size: 12px;
+            margin-right: 5px;
+            color: #ffd700;
+        }
+        
+        .coach-info {
+            padding: 20px;
+        }
+        
+        .coach-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        
+        .coach-game {
+            display: inline-block;
+            background: rgba(0,212,255,0.15);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+        
+        .coach-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .coach-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .coach-stat .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .coach-stat .stat-label {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        
+        .coach-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+        
+        .coach-price span {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .coach-btn {
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .coach-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,212,255,0.4);
+        }
+        
+        /* Анимация загрузки */
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .loading-spinner i {
+            font-size: 48px;
+            color: #00d4ff;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 30px;
+        }
+        
+        .no-results i {
+            font-size: 64px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .no-results p {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .coaches-header h2 {
+                font-size: 32px;
+            }
+            
+            .coaches-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+                background: transparent;
+                gap: 10px;
+            }
+            
+            .search-bar input {
+                background: rgba(255,255,255,0.05);
+                border-radius: 50px;
+            }
+            
+            .search-bar button {
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <nav>
         <div class="nav-container">
             <a href="/" class="logo">🎮 CoachHub</a>
@@ -23,15 +291,23 @@
     </nav>
 
     <div class="container">
-        <h2>👨‍🏫 Наши тренеры</h2>
+        <div class="coaches-header">
+            <h2>👨‍🏫 Наши тренеры</h2>
+            <p>Выберите своего наставника и начните побеждать!</p>
+        </div>
         
-        <div class="search-bar">
-            <input type="text" id="gameFilter" placeholder="Поиск по игре (CS2, Dota 2, Valorant...)" value="{{ game_filter }}">
-            <button class="btn" onclick="searchCoaches()">Поиск</button>
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" id="gameFilter" placeholder="🔍 Поиск по игре (CS2, Dota 2, Valorant...)" value="{{ game_filter }}">
+                <button onclick="searchCoaches()">Найти</button>
+            </div>
         </div>
 
-        <div id="coachesList" class="grid">
-            <div>Загрузка...</div>
+        <div id="coachesList">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner"></i>
+                <p style="margin-top: 15px; color: #aaa;">Загрузка тренеров...</p>
+            </div>
         </div>
     </div>
 
@@ -46,25 +322,76 @@
                 
                 const container = document.getElementById('coachesList');
                 if (!coaches || coaches.length === 0) {
-                    container.innerHTML = '<div class="card">😕 Тренеры не найдены. Зарегистрируйтесь как тренер или добавьте тестовых.</div>';
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>😕 Тренеры не найдены</p>
+                            <p style="font-size: 14px;">Попробуйте изменить параметры поиска</p>
+                            <button onclick="resetSearch()" class="btn">Показать всех</button>
+                        </div>
+                    `;
                     return;
                 }
                 
-                container.innerHTML = coaches.map(coach => `
-                    <div class="card">
-                        <h3>${coach.name}</h3>
-                        <p>🎮 ${coach.game || 'Любая игра'}</p>
-                        <p>⭐ ${coach.rating || 'Новый'}</p>
-                        <p>💰 ${coach.price_per_hour || 'Договорная'} ₽/час</p>
-                        <a href="/coaches/${coach.id}" class="btn">Подробнее →</a>
+                container.innerHTML = `
+                    <div class="coaches-grid">
+                        ${coaches.map(coach => {
+                            const rating = coach.rating || 'Новый';
+                            const ratingDisplay = typeof rating === 'number' ? `${rating} ⭐` : rating;
+                            const price = coach.price_per_hour || 'Договорная';
+                            const priceDisplay = typeof price === 'number' ? `${price} ₽/час` : price;
+                            const gameName = coach.game || 'Любая игра';
+                            
+                            return `
+                                <div class="coach-card">
+                                    <div class="coach-avatar">
+                                        <i class="fas fa-chalkboard-user"></i>
+                                        <div class="coach-rating">
+                                            <i class="fas fa-star"></i> ${ratingDisplay}
+                                        </div>
+                                    </div>
+                                    <div class="coach-info">
+                                        <div class="coach-name">${escapeHtml(coach.name)}</div>
+                                        <div class="coach-game">🎮 ${escapeHtml(gameName)}</div>
+                                        <div class="coach-stats">
+                                            <div class="coach-stat">
+                                                <div class="stat-value">${coach.experience_years || 0}+</div>
+                                                <div class="stat-label">лет опыта</div>
+                                            </div>
+                                            <div class="coach-stat">
+                                                <div class="stat-value">${coach.total_students || '50'}+</div>
+                                                <div class="stat-label">учеников</div>
+                                            </div>
+                                            <div class="coach-stat">
+                                                <div class="stat-value">${coach.total_lessons || '200'}+</div>
+                                                <div class="stat-label">занятий</div>
+                                            </div>
+                                        </div>
+                                        <div class="coach-price">${priceDisplay}</div>
+                                        <a href="/coaches/${coach.id}" class="coach-btn">Подробнее →</a>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
-                `).join('');
+                `;
             } catch (error) {
-                document.getElementById('coachesList').innerHTML = '<div class="card">❌ Ошибка загрузки</div>';
+                document.getElementById('coachesList').innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>❌ Ошибка загрузки данных</p>
+                        <button onclick="loadCoaches()" class="btn">Повторить</button>
+                    </div>
+                `;
             }
         }
         
         function searchCoaches() {
+            loadCoaches();
+        }
+        
+        function resetSearch() {
+            document.getElementById('gameFilter').value = '';
             loadCoaches();
         }
         
@@ -73,7 +400,22 @@
             window.location.href = '/';
         }
         
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Загрузка при открытии страницы
         loadCoaches();
+        
+        // Поиск по Enter
+        document.getElementById('gameFilter').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCoaches();
+            }
+        });
     </script>
 </body>
 </html>

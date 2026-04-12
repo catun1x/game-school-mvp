@@ -5,35 +5,284 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Запись на занятие — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Дополнительные стили для страницы записи */
+        .booking-wrapper {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .booking-card {
+            max-width: 550px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,212,255,0.3),
+                        0 0 40px rgba(0,212,255,0.2),
+                        0 0 60px rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.5);
+            animation: neonPulse 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+        
+        @keyframes neonPulse {
+            0% {
+                box-shadow: 0 0 10px rgba(0,212,255,0.3),
+                            0 0 20px rgba(0,212,255,0.2),
+                            0 0 30px rgba(0,212,255,0.1);
+                border-color: rgba(0,212,255,0.3);
+            }
+            100% {
+                box-shadow: 0 0 30px rgba(0,212,255,0.6),
+                            0 0 50px rgba(0,212,255,0.4),
+                            0 0 70px rgba(0,212,255,0.2);
+                border-color: rgba(0,212,255,0.8);
+            }
+        }
+        
+        .booking-card h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+        
+        .booking-icon {
+            font-size: 64px;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        
+        .session-info {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .session-info-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .session-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .session-detail {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ddd;
+            font-size: 16px;
+        }
+        
+        .session-detail i {
+            width: 24px;
+            color: #00d4ff;
+            font-size: 18px;
+        }
+        
+        .price-highlight {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .price-highlight span {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .booking-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .booking-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        
+        .booking-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #00d4ff;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 20px;
+        }
+        
+        /* Адаптив */
+        @media (max-width: 480px) {
+            .booking-card {
+                padding: 25px;
+            }
+            
+            .booking-card h2 {
+                font-size: 26px;
+            }
+            
+            .session-detail {
+                font-size: 14px;
+            }
+            
+            .price-highlight {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <nav>
         <div class="nav-container">
             <a href="/" class="logo">🎮 CoachHub</a>
             <div class="nav-links">
                 <a href="/coaches">Тренеры</a>
                 <a href="/dashboard">Личный кабинет</a>
-                <a href="/logout">Выйти ({{ user.name }})</a>
+                <a href="#" onclick="logout()">🚪 Выйти ({{ user.name }})</a>
             </div>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 600px; margin-top: 80px;">
-        <div class="card">
-            <h2 style="text-align: center;">📝 Подтверждение записи</h2>
-            <div id="info" style="margin: 20px 0; text-align: center;">Загрузка информации о занятии...</div>
-            <button class="btn" style="width: 100%;" id="confirmBtn">✅ Подтвердить запись</button>
-            <div id="message" style="margin-top: 20px;"></div>
+    <div class="booking-wrapper">
+        <div class="booking-card">
+            <div class="booking-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h2>Подтверждение записи</h2>
+            <div id="sessionInfo" style="margin: 0;">
+                <div class="session-info">
+                    <div class="session-info-title">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Информация о занятии</span>
+                    </div>
+                    <div id="info" style="text-align: center; color: #aaa;">Загрузка данных...</div>
+                </div>
+            </div>
+            
+            <button class="btn booking-btn" id="confirmBtn">
+                <i class="fas fa-check-circle"></i> Подтвердить запись
+            </button>
+            
+            <div id="message"></div>
+            
+            <a href="/coaches" class="back-link">
+                <i class="fas fa-arrow-left"></i> Вернуться к выбору тренера
+            </a>
         </div>
     </div>
 
     <script>
-        const sessionId = {{ session_id }};
+        // Получаем session_id из данных, переданных от сервера
+        const sessionId = Number('{{ session_id }}');
+        
+        async function loadSessionInfo() {
+            try {
+                // Пытаемся получить информацию о занятии через API тренеров
+                // Так как у нас нет прямого API для занятия, ищем его в списке тренеров
+                const response = await fetch('/api/coaches');
+                const coaches = await response.json();
+                
+                let sessionInfo = null;
+                let coachName = '';
+                
+                // Ищем занятие среди всех тренеров
+                for (const coach of coaches) {
+                    const coachResponse = await fetch(`/api/coaches/${coach.id}`);
+                    const coachData = await coachResponse.json();
+                    const session = coachData.sessions.find(s => s.id === sessionId);
+                    if (session) {
+                        sessionInfo = session;
+                        coachName = coach.name;
+                        break;
+                    }
+                }
+                
+                if (sessionInfo) {
+                    const infoDiv = document.getElementById('info');
+                    infoDiv.innerHTML = `
+                        <div class="session-details">
+                            <div class="session-detail">
+                                <i class="fas fa-tag"></i>
+                                <span><strong>${escapeHtml(sessionInfo.title)}</strong></span>
+                            </div>
+                            <div class="session-detail">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Тренер: ${escapeHtml(coachName)}</span>
+                            </div>
+                            <div class="session-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Длительность: ${sessionInfo.duration} минут</span>
+                            </div>
+                            ${sessionInfo.start_time ? `
+                                <div class="session-detail">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <span>Дата: ${new Date(sessionInfo.start_time).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                            ${sessionInfo.description ? `
+                                <div class="session-detail">
+                                    <i class="fas fa-align-left"></i>
+                                    <span>${escapeHtml(sessionInfo.description)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="price-highlight">
+                            ${sessionInfo.price} ₽ <span>/ занятие</span>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('info').innerHTML = '<p style="color: #ffaa00;">⚠️ Информация о занятии временно недоступна</p>';
+                }
+            } catch (error) {
+                document.getElementById('info').innerHTML = '<p style="color: #ffaa00;">⚠️ Не удалось загрузить информацию о занятии</p>';
+            }
+        }
         
         async function confirmBooking() {
             const btn = document.getElementById('confirmBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Обработка...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
             
             try {
                 const response = await fetch('/api/bookings', {
@@ -46,24 +295,53 @@
                 
                 if (response.ok) {
                     const messageDiv = document.getElementById('message');
-                    messageDiv.innerHTML = '<div class="alert alert-success">✅ Запись успешно оформлена! Перенаправление...</div>';
-                    setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> ✅ Запись успешно оформлена! Перенаправление...
+                        </div>
+                    `;
+                    setTimeout(() => { 
+                        window.location.href = '/dashboard'; 
+                    }, 1500);
                 } else {
                     btn.disabled = false;
-                    btn.textContent = '✅ Подтвердить запись';
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Подтвердить запись';
                     const messageDiv = document.getElementById('message');
-                    messageDiv.innerHTML = `<div class="alert alert-error">❌ Ошибка: ${data.detail || 'Не удалось записаться'}</div>`;
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-triangle"></i> ❌ Ошибка: ${data.detail || 'Не удалось записаться'}
+                        </div>
+                    `;
                 }
             } catch (error) {
                 btn.disabled = false;
-                btn.textContent = '✅ Подтвердить запись';
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Подтвердить запись';
                 const messageDiv = document.getElementById('message');
-                messageDiv.innerHTML = '<div class="alert alert-error">❌ Ошибка соединения с сервером</div>';
+                messageDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i> ❌ Ошибка соединения с сервером
+                    </div>
+                `;
             }
         }
         
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function logout() {
+            await fetch('/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+        
+        // Загружаем информацию о занятии
+        loadSessionInfo();
+        
+        // Назначаем обработчик на кнопку
         document.getElementById('confirmBtn').addEventListener('click', confirmBooking);
-        document.getElementById('info').innerHTML = '<p>Пожалуйста, подтвердите запись на выбранное занятие.</p>';
     </script>
 </body>
 </html>

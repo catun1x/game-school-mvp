@@ -425,7 +425,7 @@ async def get_all_users():
         users = cursor.fetchall()
         return {"users": [dict(user) for user in users]}
 
-# ==================== ЗАПУСК ====================
+
 if __name__ == "__main__":
     import uvicorn
     import os
