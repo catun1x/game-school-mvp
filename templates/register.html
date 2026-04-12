@@ -5,11 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="register-page">
+
+    <!-- Плавающие слова на заднем плане -->
+    <div class="floating-bg">
+        <div class="floating-column col1">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col2">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col3">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col4">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col5">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col6">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col7">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+    </div>
+
     <nav>
         <div class="nav-container">
-            <a href="/" class="logo">🎮 CoachHub</a>
+            <a href="/" class="logo"><i class="fa-solid fa-gamepad"></i> CoachHub</a>
             <div class="nav-links">
                 <a href="/coaches">Тренеры</a>
                 <a href="/login">Вход</a>
@@ -18,50 +46,114 @@
         </div>
     </nav>
 
-    <div class="container" style="max-width: 500px; margin-top: 80px;">
-        <div class="card">
-            <h2 style="text-align: center; margin-bottom: 30px;">Регистрация</h2>
+    <div class="register-wrapper">
+        <div class="register-card">
+            <h2>Создать аккаунт</h2>
+            <div class="register-subtitle">Присоединяйся к сообществу игроков и тренеров</div>
+            
             <form id="registerForm">
-                <div class="form-group">
+                <div class="role-switch">
+                    <label class="role-option">
+                        <input type="radio" name="role" value="player" checked>
+                        <div class="role-card">
+                            <i class="fas fa-gamepad"></i>
+                            <div class="role-title">Игрок</div>
+                            <div class="role-desc">Ученик, ищу тренера</div>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="role" value="coach">
+                        <div class="role-card">
+                            <i class="fas fa-chalkboard-user"></i>
+                            <div class="role-title">Тренер</div>
+                            <div class="role-desc">Обучаю и веду учеников</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="input-group">
                     <label>Имя</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" placeholder="Как вас зовут?" required>
                 </div>
-                <div class="form-group">
+                
+                <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" placeholder="example@mail.ru" required>
                 </div>
-                <div class="form-group">
+                
+                <div class="input-group">
                     <label>Пароль</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" placeholder="Минимум 6 символов" required>
                 </div>
-                <div class="form-group">
-                    <label>Роль</label>
-                    <select id="role" name="role">
-                        <option value="player">Игрок (ученик)</option>
-                        <option value="coach">Тренер</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Зарегистрироваться</button>
+                
+                <button type="submit" class="btn register-btn">Зарегистрироваться</button>
             </form>
-            <div id="message" style="margin-top: 15px;"></div>
+            
+            <div id="message"></div>
+            
+            <div class="login-link">
+                Уже есть аккаунт? <a href="/login">Войти</a>
+            </div>
         </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-gamepad"></i> CoachHub</h4>
+                <p>Платформа №1 для поиска профессиональных тренеров по киберспорту</p>
+                <div class="social-links">
+                    <a href="#">📘</a>
+                    <a href="#">📷</a>
+                    <a href="#">🎵</a>
+                    <a href="#">💬</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Быстрые ссылки</h4>
+                <a href="/coaches">Найти тренера</a>
+                <a href="/login">Вход</a>
+                <a href="/register">Регистрация</a>
+            </div>
+            <div class="footer-section">
+                <h4>Контакты</h4>
+                <a href="#"><i class="fab fa-discord"></i> Наш дискорд</a>
+                <a href="#"><i class="fa-brands fa-twitch"></i> Стримы наших тренеров каждый день!</a>
+                <a href="#"><i class="fa-solid fa-phone"></i> +7 (923) 334 35 48</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CoachHub. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="easterEggBtn" style="background: none; border: none; cursor: pointer; padding: 0;">
+            <img src="https://s10.iimage.su/s/12/th_gHU8xUgxGAEazq88SRU1V7vSVeXp4svBXi2mgNzbz.png" width="50" height="50" alt="Кулич" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); transition: transform 0.2s;">
+        </button>
     </div>
 
     <script>
         const registerForm = document.getElementById('registerForm');
+        
         registerForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const role = document.getElementById('role').value;
+            const selectedRole = document.querySelector('input[name="role"]:checked').value;
+            
+            if (password.length < 6) {
+                document.getElementById('message').innerHTML = '<div class="alert alert-error">⚠️ Пароль должен быть не менее 6 символов</div>';
+                return;
+            }
             
             try {
                 const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, role })
+                    body: JSON.stringify({ name, email, password, role: selectedRole })
                 });
                 
                 const data = await response.json();
@@ -70,12 +162,10 @@
                     document.cookie = `access_token=${data.access_token}; path=/`;
                     window.location.href = '/dashboard';
                 } else {
-                    const messageDiv = document.getElementById('message');
-                    messageDiv.innerHTML = `<div class="alert alert-error">${data.detail || 'Ошибка регистрации'}</div>`;
+                    document.getElementById('message').innerHTML = `<div class="alert alert-error">${data.detail || 'Ошибка регистрации'}</div>`;
                 }
             } catch (error) {
-                const messageDiv = document.getElementById('message');
-                messageDiv.innerHTML = '<div class="alert alert-error">Ошибка соединения с сервером</div>';
+                document.getElementById('message').innerHTML = '<div class="alert alert-error">❌ Ошибка соединения с сервером</div>';
             }
         });
     </script>

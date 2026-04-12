@@ -5,11 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — CoachHub</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="login-page">
+
+    <!-- Плавающие слова на заднем плане -->
+    <div class="floating-bg">
+        <div class="floating-column col1">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col2">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col3">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col4">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col5">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col6">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+        <div class="floating-column col7">
+            <span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span><span>CoachHub</span>
+        </div>
+    </div>
+
     <nav>
         <div class="nav-container">
-            <a href="/" class="logo">🎮 CoachHub</a>
+            <a href="/" class="logo"><i class="fa-solid fa-gamepad"></i> CoachHub</a>
             <div class="nav-links">
                 <a href="/coaches">Тренеры</a>
                 <a href="/login">Вход</a>
@@ -18,29 +46,70 @@
         </div>
     </nav>
 
-    <div class="container" style="max-width: 500px; margin-top: 80px;">
-        <div class="card">
-            <h2 style="text-align: center; margin-bottom: 30px;">Вход в аккаунт</h2>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2>Добро пожаловать!</h2>
+            <div class="login-subtitle">Войдите в свой аккаунт</div>
+            
             <form id="loginForm">
-                <div class="form-group">
+                <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" placeholder="example@mail.ru" required>
                 </div>
-                <div class="form-group">
+                
+                <div class="input-group">
                     <label>Пароль</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" placeholder="Введите пароль" required>
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Войти</button>
+                
+                <button type="submit" class="btn login-btn">Войти</button>
             </form>
-            <p style="text-align: center; margin-top: 20px;">
-                Нет аккаунта? <a href="/register" style="color: #00d4ff;">Зарегистрироваться</a>
-            </p>
-            <div id="message" style="margin-top: 15px;"></div>
+            
+            <div class="register-link">
+                Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+            </div>
         </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-gamepad"></i> CoachHub</h4>
+                <p>Платформа №1 для поиска профессиональных тренеров по киберспорту</p>
+                <div class="social-links">
+                    <a href="#">📘</a>
+                    <a href="#">📷</a>
+                    <a href="#">🎵</a>
+                    <a href="#">💬</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Быстрые ссылки</h4>
+                <a href="/coaches">Найти тренера</a>
+                <a href="/login">Вход</a>
+                <a href="/register">Регистрация</a>
+            </div>
+            <div class="footer-section">
+                <h4>Контакты</h4>
+                <a href="#"><i class="fab fa-discord"></i> Наш дискорд</a>
+                <a href="#"><i class="fa-brands fa-twitch"></i> Стримы наших тренеров каждый день!</a>
+                <a href="#"><i class="fa-solid fa-phone"></i> +7 (923) 334 35 48</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CoachHub. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="easterEggBtn" style="background: none; border: none; cursor: pointer; padding: 0;">
+            <img src="https://s10.iimage.su/s/12/th_gHU8xUgxGAEazq88SRU1V7vSVeXp4svBXi2mgNzbz.png" width="50" height="50" alt="Кулич" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); transition: transform 0.2s;">
+        </button>
     </div>
 
     <script>
         const loginForm = document.getElementById('loginForm');
+        
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             
@@ -60,12 +129,10 @@
                     document.cookie = `access_token=${data.access_token}; path=/`;
                     window.location.href = '/dashboard';
                 } else {
-                    const messageDiv = document.getElementById('message');
-                    messageDiv.innerHTML = '<div class="alert alert-error">Неверный email или пароль</div>';
+                    document.getElementById('message').innerHTML = '<div class="alert alert-error">❌ Неверный email или пароль</div>';
                 }
             } catch (error) {
-                const messageDiv = document.getElementById('message');
-                messageDiv.innerHTML = '<div class="alert alert-error">Ошибка соединения с сервером</div>';
+                document.getElementById('message').innerHTML = '<div class="alert alert-error">❌ Ошибка соединения с сервером</div>';
             }
         });
     </script>
