@@ -1,0 +1,262 @@
+/* Стили для личного кабинета */
+.dashboard-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Профильная карточка */
+.profile-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,212,255,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0,212,255,0.6);
+    box-shadow: 0 15px 40px rgba(0,212,255,0.2);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.profile-avatar {
+    position: relative;
+}
+
+.avatar-img {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    box-shadow: 0 0 20px rgba(0,212,255,0.5);
+    transition: transform 0.3s;
+}
+
+.avatar-img:hover {
+    transform: scale(1.05);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    color: #00d4ff;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.profile-info p {
+    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.profile-info i {
+    width: 25px;
+    color: #00d4ff;
+    margin-right: 10px;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.role-badge.coach {
+    background: rgba(0,212,255,0.2);
+    border: 1px solid #00d4ff;
+    color: #00d4ff;
+}
+
+.role-badge.player {
+    background: rgba(255,215,0,0.2);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0,212,255,0.3);
+}
+
+.stat-card i {
+    font-size: 36px;
+    color: #00d4ff;
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.stat-card .stat-label {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* Заголовок секции */
+.section-title {
+    font-size: 28px;
+    color: #00d4ff;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title i {
+    font-size: 28px;
+}
+
+/* Карточки записей */
+.bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.booking-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s;
+    border-left: 4px solid #00d4ff;
+}
+
+.booking-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.booking-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-bottom: 12px;
+}
+
+.booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.booking-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.booking-detail i {
+    width: 20px;
+    color: #00d4ff;
+}
+
+.booking-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+.status-confirmed {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+}
+
+.status-cancelled {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.empty-bookings {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+}
+
+.empty-bookings i {
+    font-size: 64px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.empty-bookings p {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bookings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+}

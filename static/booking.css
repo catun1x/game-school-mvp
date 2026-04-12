@@ -1,0 +1,162 @@
+/* Стили для страницы записи на занятие */
+.booking-wrapper {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.booking-card {
+    max-width: 550px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 0 20px rgba(0,212,255,0.3),
+                0 0 40px rgba(0,212,255,0.2),
+                0 0 60px rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.5);
+    animation: neonPulse 2s ease-in-out infinite alternate;
+    text-align: center;
+}
+
+@keyframes neonPulse {
+    0% {
+        box-shadow: 0 0 10px rgba(0,212,255,0.3),
+                    0 0 20px rgba(0,212,255,0.2),
+                    0 0 30px rgba(0,212,255,0.1);
+        border-color: rgba(0,212,255,0.3);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(0,212,255,0.6),
+                    0 0 50px rgba(0,212,255,0.4),
+                    0 0 70px rgba(0,212,255,0.2);
+        border-color: rgba(0,212,255,0.8);
+    }
+}
+
+.booking-card h2 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 32px;
+}
+
+.booking-icon {
+    font-size: 64px;
+    color: #00d4ff;
+    margin-bottom: 20px;
+}
+
+.session-info {
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 25px 0;
+    text-align: left;
+}
+
+.session-info-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.session-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.session-detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ddd;
+    font-size: 16px;
+}
+
+.session-detail i {
+    width: 24px;
+    color: #00d4ff;
+    font-size: 18px;
+}
+
+.price-highlight {
+    font-size: 28px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.price-highlight span {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.booking-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.booking-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0,212,255,0.5);
+}
+
+.booking-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: #00d4ff;
+}
+
+.alert {
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 480px) {
+    .booking-card {
+        padding: 25px;
+    }
+    
+    .booking-card h2 {
+        font-size: 26px;
+    }
+    
+    .session-detail {
+        font-size: 14px;
+    }
+    
+    .price-highlight {
+        font-size: 24px;
+    }
+}

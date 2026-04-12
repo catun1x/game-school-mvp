@@ -1,0 +1,263 @@
+/* Стили для страницы тренеров */
+.coaches-header {
+    text-align: center;
+    padding: 40px 20px 20px;
+}
+
+.coaches-header h2 {
+    font-size: 42px;
+    color: #00d4ff;
+    margin-bottom: 15px;
+}
+
+.coaches-header p {
+    color: #aaa;
+    font-size: 18px;
+}
+
+.search-section {
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 60px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+}
+
+.search-bar:focus-within {
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0,212,255,0.3);
+}
+
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 14px 20px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.search-bar button {
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 0 30px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.search-bar button:hover {
+    transform: scale(1.02);
+}
+
+/* Карточки тренеров */
+.coaches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.coach-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+}
+
+.coach-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0,212,255,0.4);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+}
+
+.coach-avatar {
+    height: 140px;
+    background: linear-gradient(135deg, #00d4ff20 0%, #0099cc20 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.coach-avatar i {
+    font-size: 70px;
+    color: #00d4ff;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+}
+
+.coach-rating {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.coach-rating i {
+    font-size: 12px;
+    margin-right: 5px;
+    color: #ffd700;
+}
+
+.coach-info {
+    padding: 20px;
+}
+
+.coach-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.coach-game {
+    display: inline-block;
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #00d4ff;
+    margin-bottom: 15px;
+}
+
+.coach-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.coach-stat {
+    text-align: center;
+    flex: 1;
+}
+
+.coach-stat .stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.coach-stat .stat-label {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.coach-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-bottom: 15px;
+}
+
+.coach-price span {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.coach-btn {
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.coach-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,212,255,0.4);
+}
+
+/* Анимация загрузки */
+.loading-spinner {
+    text-align: center;
+    padding: 60px;
+}
+
+.loading-spinner i {
+    font-size: 48px;
+    color: #00d4ff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 30px;
+}
+
+.no-results i {
+    font-size: 64px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.no-results p {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .coaches-header h2 {
+        font-size: 32px;
+    }
+    
+    .coaches-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-bar {
+        flex-direction: column;
+        background: transparent;
+        gap: 10px;
+    }
+    
+    .search-bar input {
+        background: rgba(255,255,255,0.05);
+        border-radius: 50px;
+    }
+    
+    .search-bar button {
+        padding: 12px;
+    }
+}
