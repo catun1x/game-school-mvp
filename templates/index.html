@@ -5,16 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CoachHub — Платформа для поиска тренеров</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+
+    <!-- Навигация -->
     <nav>
         <div class="nav-container">
-            <a href="/" class="logo">🎮 CoachHub</a>
+            <a href="/" class="logo"><i class="fa-solid fa-gamepad"></i> CoachHub</a>
             <div class="nav-links">
                 <a href="/coaches">Тренеры</a>
                 {% if user %}
                     <a href="/dashboard">Личный кабинет</a>
-                    <a href="#" onclick="logout()">🚪 Выйти ({{ user.name }})</a>
+                    <a href="#" onclick="logout()">Выйти ({{ user.name }})</a>
                 {% else %}
                     <a href="/login">Вход</a>
                     <a href="/register">Регистрация</a>
@@ -23,19 +27,212 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div style="text-align: center; padding: 80px 0 60px;">
-            <h1 style="font-size: 52px;">Найди <span style="color: #00d4ff;">профессионального тренера</span></h1>
-            <p style="font-size: 22px; color: #ccc;">CS2 · Dota 2 · Valorant · LoL · и другие игры</p>
-            <a href="/coaches" class="btn" style="font-size: 18px;">Найти тренера →</a>
+    <!-- Баннер -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1>Найди <span>профессионального тренера</span></h1>
+            <p>CS2 · Dota 2 · Valorant · LoL · и другие игры</p>
+            <a href="/coaches" class="btn">Найти тренера →</a>
         </div>
     </div>
 
+    <!-- Основной контент -->
+    <div class="content-after">
+        <div class="container">
+            <!-- 3 блока преимуществ -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop" alt="Индивидуальный подход">
+                    </div>
+                    <div class="feature-content">
+                        <h3>Индивидуальный подход</h3>
+                        <p>Разбор ваших демок, анализ ошибок и персональный план тренировок от опытных наставников</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=300&fit=crop" alt="Отслеживание прогресса">
+                    </div>
+                    <div class="feature-content">
+                        <h3>Отслеживание прогресса</h3>
+                        <p>Статистика вашего роста, достижения и история занятий в личном кабинете</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&h=300&fit=crop" alt="Проверенные тренеры">
+                    </div>
+                    <div class="feature-content">
+                        <h3>Проверенные тренеры</h3>
+                        <p>Только опытные наставники с реальными результатами учеников и высоким рейтингом</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок: фото + текст -->
+            <div class="info-block">
+                <div class="info-image">
+                    <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&h=400&fit=crop" alt="Тренировка с тренером">
+                </div>
+                <div class="info-text">
+                    <h2>Почему выбирают нас?</h2>
+                    <p>Более 500 успешных учеников уже улучшили свои навыки с помощью наших тренеров. Мы предлагаем индивидуальный подход, современные методики обучения и постоянную поддержку на каждом этапе.</p>
+                    <a href="/coaches" class="btn">Начать обучение →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>🎮 CoachHub</h4>
+                <p>Платформа №1 для поиска профессиональных тренеров по киберспорту</p>
+                <div class="social-links">
+                    <a href="#">📘</a>
+                    <a href="#">📷</a>
+                    <a href="#">🎵</a>
+                    <a href="#">💬</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Быстрые ссылки</h4>
+                <a href="/coaches">Найти тренера</a>
+                <a href="/login">Вход</a>
+                <a href="/register">Регистрация</a>
+            </div>
+            <div class="footer-section">
+                <h4>Контакты</h4>
+                <a href="#"><i class="fab fa-discord"></i>  Наш дискорд</a>
+                <a href="#"><i class="fa-brands fa-twitch"></i>  Стримы наших тренеров каждый день!</a>
+                <a href="#"><i class="fa-solid fa-phone"></i>  +7 (923) 334 35 48</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CoachHub. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Кнопка-кулич-->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="easterEggBtn" style="background: none; border: none; cursor: pointer; padding: 0;">
+            <img src="https://s10.iimage.su/s/12/th_gHU8xUgxGAEazq88SRU1V7vSVeXp4svBXi2mgNzbz.png" width="50" height="50" alt="Кулич" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); transition: transform 0.2s;">
+        </button>
+    </div>
+
     <script>
-        async function logout() {
-            await fetch('/logout', { method: 'POST' });
-            window.location.href = '/';
+    (function() {
+        let isRaining = false;
+        let rainInterval = null;
+        
+        const KULICH_IMG_URL = 'https://s10.iimage.su/s/12/th_gHU8xUgxGAEazq88SRU1V7vSVeXp4svBXi2mgNzbz.png';
+        
+        function createFallingKulich() {
+            const kulichContainer = document.createElement('div');
+            kulichContainer.style.position = 'fixed';
+            kulichContainer.style.left = Math.random() * window.innerWidth + 'px';
+            kulichContainer.style.top = '-60px';
+            kulichContainer.style.zIndex = '9999';
+            kulichContainer.style.pointerEvents = 'none';
+            
+            const img = document.createElement('img');
+            img.src = KULICH_IMG_URL;
+            img.style.width = (35 + Math.random() * 20) + 'px';
+            img.style.height = 'auto';
+            img.style.display = 'block';
+            img.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.2))';
+            
+            const rotation = -15 + Math.random() * 30;
+            img.style.transform = `rotate(${rotation}deg)`;
+            
+            kulichContainer.appendChild(img);
+            document.body.appendChild(kulichContainer);
+            
+            let pos = -60;
+            const speed = 2 + Math.random() * 4;
+            const rotationSpeed = (Math.random() - 0.5) * 2;
+            let currentRotation = rotation;
+            
+            const fall = setInterval(() => {
+                pos += speed;
+                currentRotation += rotationSpeed;
+                kulichContainer.style.top = pos + 'px';
+                img.style.transform = `rotate(${currentRotation}deg)`;
+                
+                if (pos > window.innerHeight + 100) {
+                    clearInterval(fall);
+                    kulichContainer.remove();
+                }
+            }, 20);
         }
-    </script>
+        
+        function startRain() {
+            if (rainInterval) return;
+            isRaining = true;
+            rainInterval = setInterval(() => {
+                for(let i = 0; i < 4; i++) {
+                    createFallingKulich();
+                }
+            }, 120);
+        }
+        
+        function stopRain() {
+            if (rainInterval) {
+                clearInterval(rainInterval);
+                rainInterval = null;
+            }
+            isRaining = false;
+        }
+        
+        function showMessage() {
+            const msg = document.createElement('div');
+            msg.innerHTML = '🐣 Христос Воскресе!🐣';
+            msg.style.position = 'fixed';
+            msg.style.top = '50%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translate(-50%, -50%)';
+            msg.style.backgroundColor = 'rgba(0,0,0,0.92)';
+            msg.style.color = '#ffd700';
+            msg.style.fontSize = '34px';
+            msg.style.fontWeight = 'bold';
+            msg.style.padding = '35px 60px';
+            msg.style.borderRadius = '25px';
+            msg.style.zIndex = '10000';
+            msg.style.textAlign = 'center';
+            msg.style.border = '3px solid #ffd700';
+            msg.style.boxShadow = '0 0 60px rgba(255,215,0,0.6)';
+            msg.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+            msg.style.backdropFilter = 'blur(5px)';
+            document.body.appendChild(msg);
+            
+            setTimeout(() => {
+                msg.style.transition = 'opacity 0.5s, transform 0.5s';
+                msg.style.opacity = '0';
+                msg.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                setTimeout(() => msg.remove(), 500);
+            }, 3500);
+        }
+        
+        const btn = document.getElementById('easterEggBtn');
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.1)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)';
+        });
+        
+        btn.addEventListener('click', () => {
+            if (!isRaining) {
+                startRain();
+                showMessage();
+                setTimeout(() => {
+                    stopRain();
+                }, 8000);
+            }
+        });
+    })();
+    </script>   
 </body>
 </html>

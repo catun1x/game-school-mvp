@@ -131,7 +131,7 @@ nav {
     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
 }
 
-/* Сетка для карточек */
+/* Сетка */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -155,10 +155,6 @@ nav {
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.3);
     color: #fff;
-}
-
-.search-bar .btn {
-    padding: 12px 24px;
 }
 
 /* Алерты */
@@ -218,31 +214,61 @@ th {
     color: #00d4ff;
 }
 
-/* Hero секция на главной */
-.hero {
-    text-align: center;
-    padding: 80px 0 60px;
+/* Футер */
+footer {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    padding: 40px 0 20px;
+    margin-top: 40px;
 }
 
-.hero h1 {
-    font-size: 52px;
-    margin-bottom: 20px;
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
 }
 
-.hero h1 span {
+.footer-section h4 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.footer-section p, .footer-section a {
+    color: #ccc;
+    line-height: 1.8;
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
     color: #00d4ff;
 }
 
-.hero p {
-    font-size: 22px;
-    color: #ccc;
-    margin-bottom: 40px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+.social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
 }
 
-/* Адаптив для мобильных */
+.social-links a {
+    font-size: 24px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 30px;
+    margin-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #888;
+    font-size: 14px;
+}
+
+/* Адаптив */
 @media (max-width: 768px) {
     .nav-container {
         flex-direction: column;
@@ -251,14 +277,6 @@ th {
     
     .grid {
         grid-template-columns: 1fr;
-    }
-    
-    .hero h1 {
-        font-size: 36px;
-    }
-    
-    .hero p {
-        font-size: 18px;
     }
     
     .profile-header {
