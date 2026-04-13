@@ -64,7 +64,7 @@
     
     function showMessage() {
         const msg = document.createElement('div');
-        msg.innerHTML = '🐣 Христос Воскресе! 🐣<br>🧁 С Пасхой! 🧁';
+        msg.innerHTML = '🐣 Христос Воскресе! 🐣';
         msg.style.position = 'fixed';
         msg.style.top = '50%';
         msg.style.left = '50%';

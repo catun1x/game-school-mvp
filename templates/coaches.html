@@ -13,12 +13,12 @@
 
     <nav>
         <div class="nav-container">
-            <a href="/" class="logo">🎮 CoachHub</a>
+            <a href="/" class="logo"><i class="fa-solid fa-gamepad"></i> CoachHub</a>
             <div class="nav-links">
                 <a href="/coaches">Тренеры</a>
                 {% if user %}
                     <a href="/dashboard">Личный кабинет</a>
-                    <a href="#" onclick="logout()">🚪 Выйти ({{ user.name }})</a>
+                    <a href="#" onclick="logout()">Выйти</a>
                 {% else %}
                     <a href="/login">Вход</a>
                     <a href="/register">Регистрация</a>
@@ -29,13 +29,13 @@
 
     <div class="container">
         <div class="coaches-header">
-            <h2>👨‍🏫 Наши тренеры</h2>
+            <h2>Наши тренеры</h2>
             <p>Выберите своего наставника и начните побеждать!</p>
         </div>
         
         <div class="search-section">
             <div class="search-bar">
-                <input type="text" id="gameFilter" placeholder="🔍 Поиск по игре (CS2, Dota 2, Valorant...)" value="{{ game_filter }}">
+                <input type="text" id="gameFilter" placeholder="Поиск по игре (CS2, Dota 2, Valorant...)" value="{{ game_filter }}">
                 <button onclick="searchCoaches()">Найти</button>
             </div>
         </div>
@@ -68,7 +68,7 @@
                     container.innerHTML = `
                         <div class="no-results">
                             <i class="fas fa-search"></i>
-                            <p>😕 Тренеры не найдены</p>
+                            <p>Тренеры не найдены</p>
                             <p style="font-size: 14px;">Попробуйте изменить параметры поиска</p>
                             <button onclick="resetSearch()" class="btn">Показать всех</button>
                         </div>
