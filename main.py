@@ -224,6 +224,16 @@ class UserLogin(BaseModel):
 class BookingCreate(BaseModel):
     session_id: int
 
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    game: Optional[str] = None
+    description: Optional[str] = None
+    experience_years: Optional[int] = None
+    price_per_hour: Optional[int] = None
+    nickname: Optional[str] = None
+    level: Optional[str] = None
+    preferred_game: Optional[str] = None
+
 # ==================== API ЭНДПОИНТЫ ====================
 @app.post("/api/register")
 async def register(user: UserRegister):
@@ -350,6 +360,27 @@ async def get_my_bookings(request: Request):
         bookings = [dict(row) for row in cursor.fetchall()]
         return bookings
 
+# НОВЫЙ ЭНДПОИНТ: тренер видит записи к себе
+@app.get("/api/coaches/bookings")
+async def get_coach_bookings(request: Request):
+    user = get_current_user(request)
+    if not user or user["role"] != "coach":
+        raise HTTPException(status_code=403, detail="Access denied. Only for coaches")
+    
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT b.id, b.status, b.created_at, s.title, s.price, s.start_time, 
+                   u.name as student_name, u.email as student_email
+            FROM bookings b
+            JOIN sessions s ON b.session_id = s.id
+            JOIN users u ON b.user_id = u.id
+            WHERE s.coach_id = ?
+            ORDER BY b.created_at DESC
+        """, (user["id"],))
+        bookings = [dict(row) for row in cursor.fetchall()]
+        return {"bookings": bookings}
+
 @app.get("/api/profile")
 async def get_profile(request: Request):
     user = get_current_user(request)
@@ -366,6 +397,72 @@ async def get_profile(request: Request):
             profile = cursor.fetchone()
         
         return {"user": user, "profile": dict(profile) if profile else None}
+
+# НОВЫЙ ЭНДПОИНТ: редактирование профиля
+@app.put("/api/profile")
+async def update_profile(profile_data: ProfileUpdate, request: Request):
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Обновляем основную информацию пользователя
+        if profile_data.name:
+            cursor.execute("UPDATE users SET name = ? WHERE id = ?", (profile_data.name, user["id"]))
+        
+        # Обновляем профиль в зависимости от роли
+        if user["role"] == "coach":
+            updates = []
+            params = []
+            if profile_data.game is not None:
+                updates.append("game = ?")
+                params.append(profile_data.game)
+            if profile_data.description is not None:
+                updates.append("description = ?")
+                params.append(profile_data.description)
+            if profile_data.experience_years is not None:
+                updates.append("experience_years = ?")
+                params.append(profile_data.experience_years)
+            if profile_data.price_per_hour is not None:
+                updates.append("price_per_hour = ?")
+                params.append(profile_data.price_per_hour)
+            
+            if updates:
+                params.append(user["id"])
+                cursor.execute(f"UPDATE coach_profiles SET {', '.join(updates)} WHERE user_id = ?", params)
+        else:
+            updates = []
+            params = []
+            if profile_data.nickname is not None:
+                updates.append("nickname = ?")
+                params.append(profile_data.nickname)
+            if profile_data.level is not None:
+                updates.append("level = ?")
+                params.append(profile_data.level)
+            if profile_data.preferred_game is not None:
+                updates.append("preferred_game = ?")
+                params.append(profile_data.preferred_game)
+            
+            if updates:
+                params.append(user["id"])
+                cursor.execute(f"UPDATE player_profiles SET {', '.join(updates)} WHERE user_id = ?", params)
+        
+        conn.commit()
+        
+        # Возвращаем обновлённый профиль
+        if user["role"] == "coach":
+            cursor.execute("SELECT * FROM coach_profiles WHERE user_id = ?", (user["id"],))
+            profile = cursor.fetchone()
+        else:
+            cursor.execute("SELECT * FROM player_profiles WHERE user_id = ?", (user["id"],))
+            profile = cursor.fetchone()
+        
+        cursor.execute("SELECT id, name, email, role FROM users WHERE id = ?", (user["id"],))
+        updated_user = cursor.fetchone()
+        
+        return {"user": dict(updated_user), "profile": dict(profile) if profile else None}
 
 # ==================== HTML СТРАНИЦЫ ====================
 @app.get("/", response_class=HTMLResponse)
@@ -425,7 +522,7 @@ async def get_all_users():
         users = cursor.fetchall()
         return {"users": [dict(user) for user in users]}
 
-
+# ==================== ЗАПУСК ====================
 if __name__ == "__main__":
     import uvicorn
     import os
