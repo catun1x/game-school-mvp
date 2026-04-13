@@ -1,404 +1,262 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет — CoachHub</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/dashboard.css">
-    <link rel="stylesheet" href="/static/dashboard-extras.css">
-    <link rel="stylesheet" href="/static/easter-egg.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
+/* Стили для личного кабинета */
+.dashboard-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
 
-    <nav>
-        <div class="nav-container">
-            <a href="/" class="logo"><i class="fa-solid fa-gamepad"></i> CoachHub</a>
-            <div class="nav-links">
-                <a href="/coaches">Тренеры</a>
-                <a href="/dashboard">Личный кабинет</a>
-                <a href="#" onclick="logout()">Выйти</a>
-            </div>
-        </div>
-    </nav>
+/* Профильная карточка */
+.profile-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,212,255,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
 
-    <div class="dashboard-wrapper" id="content">
-        <div style="text-align: center; padding: 60px;">Загрузка профиля...</div>
-    </div>
+.profile-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0,212,255,0.6);
+    box-shadow: 0 15px 40px rgba(0,212,255,0.2);
+}
 
-    <!-- Модальное окно редактирования профиля -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <h3><i class="fas fa-edit"></i> Редактировать профиль</h3>
-            <form id="editProfileForm">
-                <label>Имя</label>
-                <input type="text" id="edit_name" placeholder="Имя">
-                
-                <div id="coachFields" style="display: none;">
-                    <label>Игра</label>
-                    <input type="text" id="edit_game" placeholder="CS2, Dota 2, Valorant...">
-                    
-                    <label>Описание</label>
-                    <textarea id="edit_description" rows="3" placeholder="Расскажите о себе"></textarea>
-                    
-                    <label>Опыт (лет)</label>
-                    <input type="number" id="edit_experience_years" placeholder="0">
-                    
-                    <label>Цена за час (₽)</label>
-                    <input type="number" id="edit_price_per_hour" placeholder="0">
-                </div>
-                
-                <div id="playerFields" style="display: none;">
-                    <label>Никнейм</label>
-                    <input type="text" id="edit_nickname" placeholder="Ваш ник">
-                    
-                    <label>Уровень</label>
-                    <select id="edit_level">
-                        <option value="Начинающий">Начинающий</option>
-                        <option value="Средний">Средний</option>
-                        <option value="Продвинутый">Продвинутый</option>
-                        <option value="Профессионал">Профессионал</option>
-                    </select>
-                    
-                    <label>Любимая игра</label>
-                    <input type="text" id="edit_preferred_game" placeholder="CS2, Dota 2...">
-                </div>
-                
-                <div class="modal-buttons">
-                    <button type="button" class="btn close-modal" onclick="closeModal()">Отмена</button>
-                    <button type="submit" class="btn">Сохранить</button>
-                </div>
-            </form>
-            <div id="editMessage" style="margin-top: 10px;"></div>
-        </div>
-    </div>
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
 
-    <!-- Кнопка-кулич -->
-    <button class="easter-egg-btn" id="easterEggBtn">
-        <img src="https://s10.iimage.su/s/12/th_gHU8xUgxGAEazq88SRU1V7vSVeXp4svBXi2mgNzbz.png" alt="Кулич">
-    </button>
+.profile-avatar {
+    position: relative;
+}
 
-    <script src="/static/easter-egg.js"></script>
-    <script>
-        let currentUserRole = null;
-        let currentProfile = null;
+.avatar-img {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    box-shadow: 0 0 20px rgba(0,212,255,0.5);
+    transition: transform 0.3s;
+}
 
-        async function logout() {
-            await fetch('/logout', { method: 'POST' });
-            window.location.href = '/';
-        }
+.avatar-img:hover {
+    transform: scale(1.05);
+}
 
-        function openModal() {
-            document.getElementById('editModal').style.display = 'flex';
-            document.getElementById('edit_name').value = currentProfile?.user?.name || '';
-            
-            if (currentUserRole === 'coach') {
-                document.getElementById('coachFields').style.display = 'block';
-                document.getElementById('playerFields').style.display = 'none';
-                document.getElementById('edit_game').value = currentProfile?.profile?.game || '';
-                document.getElementById('edit_description').value = currentProfile?.profile?.description || '';
-                document.getElementById('edit_experience_years').value = currentProfile?.profile?.experience_years || 0;
-                document.getElementById('edit_price_per_hour').value = currentProfile?.profile?.price_per_hour || 0;
-            } else {
-                document.getElementById('coachFields').style.display = 'none';
-                document.getElementById('playerFields').style.display = 'block';
-                document.getElementById('edit_nickname').value = currentProfile?.profile?.nickname || '';
-                document.getElementById('edit_level').value = currentProfile?.profile?.level || 'Начинающий';
-                document.getElementById('edit_preferred_game').value = currentProfile?.profile?.preferred_game || '';
-            }
-        }
+.profile-info {
+    flex: 1;
+}
 
-        function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
-            document.getElementById('editMessage').innerHTML = '';
-        }
+.profile-info h2 {
+    color: #00d4ff;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
 
-        async function saveProfile(event) {
-            event.preventDefault();
-            
-            const updateData = { name: document.getElementById('edit_name').value };
-            
-            if (currentUserRole === 'coach') {
-                updateData.game = document.getElementById('edit_game').value;
-                updateData.description = document.getElementById('edit_description').value;
-                updateData.experience_years = parseInt(document.getElementById('edit_experience_years').value) || 0;
-                updateData.price_per_hour = parseInt(document.getElementById('edit_price_per_hour').value) || 0;
-            } else {
-                updateData.nickname = document.getElementById('edit_nickname').value;
-                updateData.level = document.getElementById('edit_level').value;
-                updateData.preferred_game = document.getElementById('edit_preferred_game').value;
-            }
-            
-            try {
-                const response = await fetch('/api/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if (response.ok) {
-                    document.getElementById('editMessage').innerHTML = '<div class="alert alert-success">✅ Профиль обновлён!</div>';
-                    setTimeout(() => {
-                        closeModal();
-                        loadDashboard();
-                    }, 1500);
-                } else {
-                    const error = await response.json();
-                    document.getElementById('editMessage').innerHTML = `<div class="alert alert-error">❌ ${error.detail || 'Ошибка'}</div>`;
-                }
-            } catch (error) {
-                document.getElementById('editMessage').innerHTML = '<div class="alert alert-error">❌ Ошибка соединения</div>';
-            }
-        }
+.profile-info p {
+    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
 
-        async function loadDashboard() {
-            try {
-                const profileRes = await fetch('/api/profile');
-                const profile = await profileRes.json();
-                
-                currentProfile = profile;
-                currentUserRole = profile.user.role;
-                
-                const user = profile.user;
-                const userProfile = profile.profile || {};
-                
-                const roleText = user.role === 'coach' ? '🏆 Тренер' : '🎮 Игрок';
-                const roleClass = user.role === 'coach' ? 'coach' : 'player';
-                
-                let extraInfo = '';
-                let studentsHtml = '';
-                let bookingsHtml = '';
-                let statsHtml = '';
-                let editButtonHtml = '<button onclick="openModal()" class="btn edit-btn" style="margin-top: 15px;"><i class="fas fa-pencil-alt"></i> Редактировать профиль</button>';
-                
-                if (user.role === 'coach') {
-                    extraInfo = `
-                        <p><i class="fas fa-chalkboard-user"></i> Игра: ${userProfile.game || 'Не указана'}</p>
-                        <p><i class="fas fa-star"></i> Рейтинг: ${userProfile.rating || 'Новый'}</p>
-                        <p><i class="fas fa-ruble-sign"></i> Цена: ${userProfile.price_per_hour || 'Договорная'} ₽/час</p>
-                        <p><i class="fas fa-calendar"></i> Опыт: ${userProfile.experience_years || 0} лет</p>
-                    `;
-                    
-                    const studentsRes = await fetch('/api/coaches/bookings');
-                    const studentsData = await studentsRes.json();
-                    const students = studentsData.bookings || [];
-                    
-                    const totalStudents = students.length;
-                    const confirmedStudents = students.filter(s => s.status === 'confirmed').length;
-                    
-                    statsHtml = `
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <i class="fas fa-users"></i>
-                                <div class="stat-value">${totalStudents}</div>
-                                <div class="stat-label">Всего учеников</div>
-                            </div>
-                            <div class="stat-card">
-                                <i class="fas fa-check-circle"></i>
-                                <div class="stat-value">${confirmedStudents}</div>
-                                <div class="stat-label">Подтверждено</div>
-                            </div>
-                            <div class="stat-card">
-                                <i class="fas fa-clock"></i>
-                                <div class="stat-value">${totalStudents - confirmedStudents}</div>
-                                <div class="stat-label">В обработке</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    if (students.length === 0) {
-                        studentsHtml = `
-                            <div class="empty-bookings">
-                                <i class="fas fa-user-graduate"></i>
-                                <p>У вас пока нет учеников</p>
-                                <a href="/coaches" class="btn">🎮 Продвигать курсы</a>
-                            </div>
-                        `;
-                    } else {
-                        studentsHtml = `
-                            <div class="students-grid">
-                                ${students.map(s => `
-                                    <div class="student-card">
-                                        <div class="student-name">${escapeHtml(s.student_name)}</div>
-                                        <div class="student-detail">
-                                            <i class="fas fa-envelope"></i>
-                                            <span>${escapeHtml(s.student_email)}</span>
-                                        </div>
-                                        <div class="student-detail">
-                                            <i class="fas fa-tag"></i>
-                                            <span>${escapeHtml(s.title)}</span>
-                                        </div>
-                                        <div class="student-detail">
-                                            <i class="fas fa-ruble-sign"></i>
-                                            <span>${s.price} ₽</span>
-                                        </div>
-                                        <div class="student-detail">
-                                            <i class="fas fa-calendar"></i>
-                                            <span>${new Date(s.created_at).toLocaleDateString()}</span>
-                                        </div>
-                                        <div class="booking-status ${s.status === 'confirmed' ? 'status-confirmed' : 'status-pending'}">
-                                            ${s.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидание'}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    }
-                    
-                    document.getElementById('content').innerHTML = `
-                        <div class="profile-card">
-                            <div class="profile-header">
-                                <div class="profile-avatar">
-                                    <div class="avatar-img">🏆</div>
-                                </div>
-                                <div class="profile-info">
-                                    <h2>${escapeHtml(user.name)}</h2>
-                                    <p><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
-                                    <div class="role-badge ${roleClass}">${roleText}</div>
-                                    ${extraInfo}
-                                    ${editButtonHtml}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        ${statsHtml}
-                        
-                        <div class="section-title">
-                            <i class="fas fa-user-graduate"></i>
-                            <span>Мои ученики</span>
-                        </div>
-                        ${studentsHtml}
-                    `;
-                    
-                } else {
-                    const bookingsRes = await fetch('/api/bookings');
-                    const bookings = await bookingsRes.json();
-                    
-                    const totalBookings = bookings.length;
-                    const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
-                    
-                    extraInfo = `
-                        <p><i class="fas fa-user-ninja"></i> Никнейм: ${userProfile.nickname || user.name}</p>
-                        <p><i class="fas fa-chart-line"></i> Уровень: ${userProfile.level || 'Начинающий'}</p>
-                        <p><i class="fas fa-gamepad"></i> Любимая игра: ${userProfile.preferred_game || 'Не указана'}</p>
-                    `;
-                    
-                    statsHtml = `
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <i class="fas fa-calendar-check"></i>
-                                <div class="stat-value">${totalBookings}</div>
-                                <div class="stat-label">Всего записей</div>
-                            </div>
-                            <div class="stat-card">
-                                <i class="fas fa-check-circle"></i>
-                                <div class="stat-value">${confirmedBookings}</div>
-                                <div class="stat-label">Подтверждено</div>
-                            </div>
-                            <div class="stat-card">
-                                <i class="fas fa-clock"></i>
-                                <div class="stat-value">${totalBookings - confirmedBookings}</div>
-                                <div class="stat-label">В обработке</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    if (bookings.length === 0) {
-                        bookingsHtml = `
-                            <div class="empty-bookings">
-                                <i class="fas fa-calendar-alt"></i>
-                                <p>У вас пока нет записей на занятия</p>
-                                <a href="/coaches" class="btn">🎮 Найти тренера</a>
-                            </div>
-                        `;
-                    } else {
-                        bookingsHtml = `
-                            <div class="bookings-grid">
-                                ${bookings.map(b => {
-                                    let statusClass = '';
-                                    let statusText = '';
-                                    if (b.status === 'confirmed') {
-                                        statusClass = 'status-confirmed';
-                                        statusText = '✅ Подтверждено';
-                                    } else if (b.status === 'pending') {
-                                        statusClass = 'status-pending';
-                                        statusText = '⏳ Ожидание';
-                                    } else {
-                                        statusClass = 'status-cancelled';
-                                        statusText = '❌ Отменено';
-                                    }
-                                    return `
-                                        <div class="booking-card">
-                                            <div class="booking-title">${escapeHtml(b.title)}</div>
-                                            <div class="booking-details">
-                                                <div class="booking-detail">
-                                                    <i class="fas fa-user"></i>
-                                                    <span>Тренер: ${escapeHtml(b.coach_name)}</span>
-                                                </div>
-                                                <div class="booking-detail">
-                                                    <i class="fas fa-ruble-sign"></i>
-                                                    <span>Цена: ${b.price} ₽</span>
-                                                </div>
-                                                <div class="booking-detail">
-                                                    <i class="fas fa-calendar"></i>
-                                                    <span>Дата: ${new Date(b.created_at).toLocaleDateString()}</span>
-                                                </div>
-                                            </div>
-                                            <div class="booking-status ${statusClass}">${statusText}</div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        `;
-                    }
-                    
-                    document.getElementById('content').innerHTML = `
-                        <div class="profile-card">
-                            <div class="profile-header">
-                                <div class="profile-avatar">
-                                    <div class="avatar-img">🎮</div>
-                                </div>
-                                <div class="profile-info">
-                                    <h2>${escapeHtml(user.name)}</h2>
-                                    <p><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
-                                    <div class="role-badge ${roleClass}">${roleText}</div>
-                                    ${extraInfo}
-                                    ${editButtonHtml}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        ${statsHtml}
-                        
-                        <div class="section-title">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Мои записи на занятия</span>
-                        </div>
-                        ${bookingsHtml}
-                    `;
-                }
-            } catch (error) {
-                document.getElementById('content').innerHTML = `
-                    <div style="text-align: center; padding: 60px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
-                        <p style="color: #ccc;">❌ Ошибка загрузки профиля</p>
-                        <a href="/" class="btn" style="margin-top: 20px;">Вернуться на главную</a>
-                    </div>
-                `;
-            }
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        document.getElementById('editProfileForm').addEventListener('submit', saveProfile);
-        
-        loadDashboard();
-    </script>
-</body>
-</html>
+.profile-info i {
+    width: 25px;
+    color: #00d4ff;
+    margin-right: 10px;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.role-badge.coach {
+    background: rgba(0,212,255,0.2);
+    border: 1px solid #00d4ff;
+    color: #00d4ff;
+}
+
+.role-badge.player {
+    background: rgba(255,215,0,0.2);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0,212,255,0.3);
+}
+
+.stat-card i {
+    font-size: 36px;
+    color: #00d4ff;
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.stat-card .stat-label {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* Заголовок секции */
+.section-title {
+    font-size: 28px;
+    color: #00d4ff;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title i {
+    font-size: 28px;
+}
+
+/* Карточки записей */
+.bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.booking-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s;
+    border-left: 4px solid #00d4ff;
+}
+
+.booking-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.booking-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00d4ff;
+    margin-bottom: 12px;
+}
+
+.booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.booking-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.booking-detail i {
+    width: 20px;
+    color: #00d4ff;
+}
+
+.booking-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+.status-confirmed {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+}
+
+.status-cancelled {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.empty-bookings {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+}
+
+.empty-bookings i {
+    font-size: 64px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.empty-bookings p {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bookings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+}
