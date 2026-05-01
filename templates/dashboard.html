@@ -81,8 +81,8 @@
 
     <script src="/static/easter-egg.js"></script>
     <script>
+        let currentUserData = null;
         let currentUserRole = null;
-        let currentProfile = null;
 
         async function logout() {
             await fetch('/logout', { method: 'POST' });
@@ -90,22 +90,24 @@
         }
 
         function openModal() {
+            if (!currentUserData) return;
+            
             document.getElementById('editModal').style.display = 'flex';
-            document.getElementById('edit_name').value = currentProfile?.user?.name || '';
+            document.getElementById('edit_name').value = currentUserData.user?.name || '';
             
             if (currentUserRole === 'coach') {
                 document.getElementById('coachFields').style.display = 'block';
                 document.getElementById('playerFields').style.display = 'none';
-                document.getElementById('edit_game').value = currentProfile?.profile?.game || '';
-                document.getElementById('edit_description').value = currentProfile?.profile?.description || '';
-                document.getElementById('edit_experience_years').value = currentProfile?.profile?.experience_years || 0;
-                document.getElementById('edit_price_per_hour').value = currentProfile?.profile?.price_per_hour || 0;
+                document.getElementById('edit_game').value = currentUserData.profile?.game || '';
+                document.getElementById('edit_description').value = currentUserData.profile?.description || '';
+                document.getElementById('edit_experience_years').value = currentUserData.profile?.experience_years || 0;
+                document.getElementById('edit_price_per_hour').value = currentUserData.profile?.price_per_hour || 0;
             } else {
                 document.getElementById('coachFields').style.display = 'none';
                 document.getElementById('playerFields').style.display = 'block';
-                document.getElementById('edit_nickname').value = currentProfile?.profile?.nickname || '';
-                document.getElementById('edit_level').value = currentProfile?.profile?.level || 'Начинающий';
-                document.getElementById('edit_preferred_game').value = currentProfile?.profile?.preferred_game || '';
+                document.getElementById('edit_nickname').value = currentUserData.profile?.nickname || '';
+                document.getElementById('edit_level').value = currentUserData.profile?.level || 'Начинающий';
+                document.getElementById('edit_preferred_game').value = currentUserData.profile?.preferred_game || '';
             }
         }
 
@@ -152,34 +154,52 @@
             }
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         async function loadDashboard() {
             try {
-                const profileRes = await fetch('/api/profile');
-                const profile = await profileRes.json();
+                const response = await fetch('/api/profile');
                 
-                currentProfile = profile;
-                currentUserRole = profile.user.role;
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
                 
-                const user = profile.user;
-                const userProfile = profile.profile || {};
+                const data = await response.json();
+                console.log('Profile data:', data); // Для отладки в консоли
+                
+                // Проверяем структуру данных
+                if (!data || !data.user) {
+                    throw new Error('Некорректный ответ от сервера');
+                }
+                
+                currentUserData = data;
+                currentUserRole = data.user.role;
+                
+                const user = data.user;
+                const userProfile = data.profile || {};
                 
                 const roleText = user.role === 'coach' ? '🏆 Тренер' : '🎮 Игрок';
                 const roleClass = user.role === 'coach' ? 'coach' : 'player';
                 
                 let extraInfo = '';
-                let studentsHtml = '';
-                let bookingsHtml = '';
                 let statsHtml = '';
-                let editButtonHtml = '<button onclick="openModal()" class="btn edit-btn" style="margin-top: 15px;"><i class="fas fa-pencil-alt"></i> Редактировать профиль</button>';
+                let bookingsHtml = '';
                 
                 if (user.role === 'coach') {
+                    // Информация тренера
                     extraInfo = `
-                        <p><i class="fas fa-chalkboard-user"></i> Игра: ${userProfile.game || 'Не указана'}</p>
+                        <p><i class="fas fa-chalkboard-user"></i> Игра: ${escapeHtml(userProfile.game || 'Не указана')}</p>
                         <p><i class="fas fa-star"></i> Рейтинг: ${userProfile.rating || 'Новый'}</p>
                         <p><i class="fas fa-ruble-sign"></i> Цена: ${userProfile.price_per_hour || 'Договорная'} ₽/час</p>
                         <p><i class="fas fa-calendar"></i> Опыт: ${userProfile.experience_years || 0} лет</p>
                     `;
                     
+                    // Загружаем учеников тренера
                     const studentsRes = await fetch('/api/coaches/bookings');
                     const studentsData = await studentsRes.json();
                     const students = studentsData.bookings || [];
@@ -199,16 +219,11 @@
                                 <div class="stat-value">${confirmedStudents}</div>
                                 <div class="stat-label">Подтверждено</div>
                             </div>
-                            <div class="stat-card">
-                                <i class="fas fa-clock"></i>
-                                <div class="stat-value">${totalStudents - confirmedStudents}</div>
-                                <div class="stat-label">В обработке</div>
-                            </div>
                         </div>
                     `;
                     
                     if (students.length === 0) {
-                        studentsHtml = `
+                        bookingsHtml = `
                             <div class="empty-bookings">
                                 <i class="fas fa-user-graduate"></i>
                                 <p>У вас пока нет учеников</p>
@@ -216,7 +231,7 @@
                             </div>
                         `;
                     } else {
-                        studentsHtml = `
+                        bookingsHtml = `
                             <div class="students-grid">
                                 ${students.map(s => `
                                     <div class="student-card">
@@ -232,10 +247,6 @@
                                         <div class="student-detail">
                                             <i class="fas fa-ruble-sign"></i>
                                             <span>${s.price} ₽</span>
-                                        </div>
-                                        <div class="student-detail">
-                                            <i class="fas fa-calendar"></i>
-                                            <span>${new Date(s.created_at).toLocaleDateString()}</span>
                                         </div>
                                         <div class="booking-status ${s.status === 'confirmed' ? 'status-confirmed' : 'status-pending'}">
                                             ${s.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидание'}
@@ -257,32 +268,32 @@
                                     <p><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
                                     <div class="role-badge ${roleClass}">${roleText}</div>
                                     ${extraInfo}
-                                    ${editButtonHtml}
+                                    <button onclick="openModal()" class="btn edit-btn" style="margin-top: 15px;"><i class="fas fa-pencil-alt"></i> Редактировать профиль</button>
                                 </div>
                             </div>
                         </div>
-                        
                         ${statsHtml}
-                        
                         <div class="section-title">
                             <i class="fas fa-user-graduate"></i>
                             <span>Мои ученики</span>
                         </div>
-                        ${studentsHtml}
+                        ${bookingsHtml}
                     `;
                     
                 } else {
+                    // Игрок
+                    extraInfo = `
+                        <p><i class="fas fa-user-ninja"></i> Никнейм: ${escapeHtml(userProfile.nickname || user.name)}</p>
+                        <p><i class="fas fa-chart-line"></i> Уровень: ${escapeHtml(userProfile.level || 'Начинающий')}</p>
+                        <p><i class="fas fa-gamepad"></i> Любимая игра: ${escapeHtml(userProfile.preferred_game || 'Не указана')}</p>
+                    `;
+                    
+                    // Загружаем бронирования игрока
                     const bookingsRes = await fetch('/api/bookings');
                     const bookings = await bookingsRes.json();
                     
                     const totalBookings = bookings.length;
                     const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
-                    
-                    extraInfo = `
-                        <p><i class="fas fa-user-ninja"></i> Никнейм: ${userProfile.nickname || user.name}</p>
-                        <p><i class="fas fa-chart-line"></i> Уровень: ${userProfile.level || 'Начинающий'}</p>
-                        <p><i class="fas fa-gamepad"></i> Любимая игра: ${userProfile.preferred_game || 'Не указана'}</p>
-                    `;
                     
                     statsHtml = `
                         <div class="stats-grid">
@@ -295,11 +306,6 @@
                                 <i class="fas fa-check-circle"></i>
                                 <div class="stat-value">${confirmedBookings}</div>
                                 <div class="stat-label">Подтверждено</div>
-                            </div>
-                            <div class="stat-card">
-                                <i class="fas fa-clock"></i>
-                                <div class="stat-value">${totalBookings - confirmedBookings}</div>
-                                <div class="stat-label">В обработке</div>
                             </div>
                         </div>
                     `;
@@ -364,13 +370,11 @@
                                     <p><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
                                     <div class="role-badge ${roleClass}">${roleText}</div>
                                     ${extraInfo}
-                                    ${editButtonHtml}
+                                    <button onclick="openModal()" class="btn edit-btn" style="margin-top: 15px;"><i class="fas fa-pencil-alt"></i> Редактировать профиль</button>
                                 </div>
                             </div>
                         </div>
-                        
                         ${statsHtml}
-                        
                         <div class="section-title">
                             <i class="fas fa-clipboard-list"></i>
                             <span>Мои записи на занятия</span>
@@ -379,25 +383,19 @@
                     `;
                 }
             } catch (error) {
+                console.error('Error loading profile:', error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
-                        <p style="color: #ccc;">❌ Ошибка загрузки профиля</p>
+                        <p style="color: #ccc;">❌ Ошибка загрузки профиля: ${error.message}</p>
                         <a href="/" class="btn" style="margin-top: 20px;">Вернуться на главную</a>
                     </div>
                 `;
             }
         }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
+        // Инициализация
         document.getElementById('editProfileForm').addEventListener('submit', saveProfile);
-        
         loadDashboard();
     </script>
 </body>
