@@ -14,10 +14,10 @@ import requests
 # ==================== НАСТРОЙКИ ====================
 app = FastAPI(title="Game School MVP")
 
-# ВАШ ВЕБХУК BITRIX24 (правильный URL для API)
-BITRIX24_WEBHOOK = "https://b24-38mywy.bitrix24.ru/rest/1/373163c75fajqjkg/"
+# ВЕБХУК BITRIX24 (правильный URL для API)
+BITRIX24_WEBHOOK = "https://b24-38mywy.bitrix24.ru/rest/1/373163c75fajqjgk/"
 
-# Коды кастомных полей (из вашего JSON)
+# Коды кастомных полей (из JSON)
 UF_PLAYER = "UF_CRM_1777380108"        # Игрок
 UF_EMAIL = "UF_CRM_1777380170"         # Email игрока
 UF_COACH = "UF_CRM_1777380197"         # Тренер
@@ -26,7 +26,7 @@ UF_SESSION_TIME = "UF_CRM_1777380430"  # Дата и время
 UF_PRICE = "UF_CRM_1777380577"         # Цена
 UF_STATUS = "UF_CRM_1777381454"        # Статус сделки
 
-# ID статусов (из вашего JSON)
+# ID статусов
 STATUS_CONFIRMED = 64
 
 # Подключаем статику (CSS) и шаблоны (HTML)
