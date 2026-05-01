@@ -170,9 +170,8 @@
                 }
                 
                 const data = await response.json();
-                console.log('Profile data:', data); // Для отладки в консоли
+                console.log('Profile data:', data);
                 
-                // Проверяем структуру данных
                 if (!data || !data.user) {
                     throw new Error('Некорректный ответ от сервера');
                 }
@@ -290,7 +289,11 @@
                     
                     // Загружаем бронирования игрока
                     const bookingsRes = await fetch('/api/bookings');
-                    const bookings = await bookingsRes.json();
+                    const bookingsData = await bookingsRes.json();
+                    console.log('Bookings data:', bookingsData);
+                    
+                    // bookingsData может быть массивом или объектом с полем bookings
+                    const bookings = Array.isArray(bookingsData) ? bookingsData : (bookingsData.bookings || []);
                     
                     const totalBookings = bookings.length;
                     const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
