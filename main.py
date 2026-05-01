@@ -225,8 +225,32 @@ def get_current_user(request: Request):
         cursor.execute("SELECT id, name, email, role FROM users WHERE id = ?", (payload.get("user_id"),))
         user = cursor.fetchone()
         return dict(user) if user else None
+
+# ==================== ФУНКЦИИ ДЛЯ BITRIX24 ====================
+
+def find_contact_by_email(email: str):
+    """Ищет контакт в Bitrix24 по email"""
     
-# ==================== ФУНКЦИЯ СОЗДАНИЯ КОНТАКТА В BITRIX24 ====================
+    try:
+        response = requests.post(
+            f"{BITRIX24_WEBHOOK}crm.contact.list",
+            json={
+                "filter": {"EMAIL": email},
+                "select": ["ID", "NAME", "EMAIL"]
+            },
+            timeout=10
+        )
+        result = response.json()
+        
+        if "error" not in result and result.get("result"):
+            contact = result["result"][0]
+            print(f"✅ Контакт найден! ID: {contact['ID']}")
+            return contact["ID"]
+        return None
+            
+    except Exception as e:
+        print(f"❌ Ошибка поиска контакта: {e}")
+        return None
 
 def create_contact_in_bitrix24(contact_data: dict):
     """Создаёт контакт в Bitrix24 (игрока)"""
@@ -251,35 +275,42 @@ def create_contact_in_bitrix24(contact_data: dict):
             return None
         else:
             contact_id = result['result']
-            print(f"✅ Контакт создан! ID: {contact_id}")
+            print(f"✅ Создан новый контакт! ID: {contact_id}")
             return contact_id
             
     except Exception as e:
         print(f"❌ Ошибка создания контакта: {e}")
         return None
 
-# ==================== ФУНКЦИЯ ОТПРАВКИ СДЕЛКИ В BITRIX24 ====================
-
 def send_deal_to_bitrix24(booking_data: dict):
     """Отправляет данные о бронировании в Bitrix24 с привязкой к контакту"""
     
-    # 1. Сначала создаём контакт (игрока)
-    contact_id = create_contact_in_bitrix24({
-        "player_name": booking_data['player_name'],
-        "player_email": booking_data['player_email']
-    })
+    # 1. Сначала ищем существующий контакт по email
+    contact_id = find_contact_by_email(booking_data['player_email'])
     
-    # 2. Создаём сделку и привязываем к контакту
+    # 2. Если контакт не найден — создаём новый
+    if not contact_id:
+        contact_id = create_contact_in_bitrix24({
+            "player_name": booking_data['player_name'],
+            "player_email": booking_data['player_email']
+        })
+    
+    # 3. Если контакт не удалось получить или создать — выходим
+    if not contact_id:
+        print("❌ Не удалось получить или создать контакт")
+        return
+    
+    # 4. Создаём сделку и привязываем к контакту
     deal_fields = {
         "fields": {
             "TITLE": f"{booking_data['player_name']} - {booking_data['session_title']}",
-            "CONTACT_ID": contact_id,  # ПРИВЯЗКА К КОНТАКТУ (для email робота)
+            "CONTACT_ID": contact_id,
             UF_PLAYER: booking_data['player_name'],
             UF_EMAIL: booking_data['player_email'],
             UF_COACH: booking_data['coach_name'],
             UF_SESSION_TITLE: booking_data['session_title'],
             UF_SESSION_TIME: booking_data['session_time'],
-            UF_PRICE: f"{booking_data['price']}|RUB",  # money формат
+            UF_PRICE: f"{booking_data['price']}|RUB",
             UF_STATUS: STATUS_CONFIRMED,
         }
     }
