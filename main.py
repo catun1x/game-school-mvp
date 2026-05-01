@@ -9,9 +9,25 @@ from datetime import datetime, timedelta
 from contextlib import contextmanager
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+import requests
 
 # ==================== НАСТРОЙКИ ====================
 app = FastAPI(title="Game School MVP")
+
+# ВАШ ВЕБХУК BITRIX24 (правильный URL для API)
+BITRIX24_WEBHOOK = "https://b24-38mywy.bitrix24.ru/rest/1/373163c75fajqjkg/"
+
+# Коды кастомных полей (из вашего JSON)
+UF_PLAYER = "UF_CRM_1777380108"        # Игрок
+UF_EMAIL = "UF_CRM_1777380170"         # Email игрока
+UF_COACH = "UF_CRM_1777380197"         # Тренер
+UF_SESSION_TITLE = "UF_CRM_1777380219" # Название занятия
+UF_SESSION_TIME = "UF_CRM_1777380430"  # Дата и время
+UF_PRICE = "UF_CRM_1777380577"         # Цена
+UF_STATUS = "UF_CRM_1777381454"        # Статус сделки
+
+# ID статусов (из вашего JSON)
+STATUS_CONFIRMED = 64
 
 # Подключаем статику (CSS) и шаблоны (HTML)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -210,6 +226,39 @@ def get_current_user(request: Request):
         user = cursor.fetchone()
         return dict(user) if user else None
 
+# ==================== ФУНКЦИЯ ОТПРАВКИ В BITRIX24 ====================
+def send_deal_to_bitrix24(booking_data: dict):
+    """Отправляет данные о бронировании в Bitrix24"""
+    
+    deal_fields = {
+        "fields": {
+            "TITLE": f"{booking_data['player_name']} - {booking_data['session_title']}",
+            UF_PLAYER: booking_data['player_name'],
+            UF_EMAIL: booking_data['player_email'],
+            UF_COACH: booking_data['coach_name'],
+            UF_SESSION_TITLE: booking_data['session_title'],
+            UF_SESSION_TIME: booking_data['session_time'],
+            UF_PRICE: booking_data['price'],
+            UF_STATUS: STATUS_CONFIRMED,
+        }
+    }
+    
+    try:
+        response = requests.post(
+            f"{BITRIX24_WEBHOOK}crm.deal.add",
+            json=deal_fields,
+            timeout=10
+        )
+        result = response.json()
+        
+        if "error" in result:
+            print(f"Ошибка Bitrix24: {result}")
+        else:
+            print(f"✅ Сделка создана! ID: {result['result']}")
+            
+    except Exception as e:
+        print(f"❌ Ошибка отправки в CRM: {e}")
+
 # ==================== PYDANTIC МОДЕЛИ ====================
 class UserRegister(BaseModel):
     name: str
@@ -319,6 +368,7 @@ async def get_coach(coach_id: int):
         
         return {"coach": dict(coach), "sessions": sessions}
 
+# ==================== ГЛАВНЫЙ ЭНДПОИНТ БРОНИРОВАНИЯ С CRM ====================
 @app.post("/api/bookings")
 async def create_booking(booking: BookingCreate, request: Request):
     user = get_current_user(request)
@@ -327,11 +377,20 @@ async def create_booking(booking: BookingCreate, request: Request):
     
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM sessions WHERE id = ? AND status = 'available'", (booking.session_id,))
+        
+        # Получаем занятие и имя тренера
+        cursor.execute("""
+            SELECT s.*, u.name as coach_name
+            FROM sessions s
+            JOIN users u ON s.coach_id = u.id
+            WHERE s.id = ? AND s.status = 'available'
+        """, (booking.session_id,))
+        
         session = cursor.fetchone()
         if not session:
             raise HTTPException(status_code=404, detail="Session not available")
         
+        # Создаем бронирование
         cursor.execute("""
             INSERT INTO bookings (user_id, session_id, status)
             VALUES (?, ?, ?)
@@ -339,26 +398,22 @@ async def create_booking(booking: BookingCreate, request: Request):
         booking_id = cursor.lastrowid
         
         conn.commit()
-        return {"id": booking_id, "status": "confirmed", "message": "Booking confirmed!"}
-
-@app.get("/api/bookings")
-async def get_my_bookings(request: Request):
-    user = get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT b.id, b.status, b.created_at, s.title, s.price, s.start_time, u.name as coach_name
-            FROM bookings b
-            JOIN sessions s ON b.session_id = s.id
-            JOIN users u ON s.coach_id = u.id
-            WHERE b.user_id = ?
-            ORDER BY b.created_at DESC
-        """, (user["id"],))
-        bookings = [dict(row) for row in cursor.fetchall()]
-        return bookings
+        
+        # Отправляем данные в Bitrix24 CRM
+        send_deal_to_bitrix24({
+            "player_name": user["name"],
+            "player_email": user["email"],
+            "coach_name": session["coach_name"],
+            "session_title": session["title"],
+            "session_time": str(session["start_time"]),
+            "price": session["price"]
+        })
+        
+        return {
+            "id": booking_id, 
+            "status": "confirmed", 
+            "message": "Booking confirmed and sent to CRM!"
+        }
 
 # НОВЫЙ ЭНДПОИНТ: тренер видит записи к себе
 @app.get("/api/coaches/bookings")
@@ -398,7 +453,6 @@ async def get_profile(request: Request):
         
         return {"user": user, "profile": dict(profile) if profile else None}
 
-# НОВЫЙ ЭНДПОИНТ: редактирование профиля
 @app.put("/api/profile")
 async def update_profile(profile_data: ProfileUpdate, request: Request):
     user = get_current_user(request)
