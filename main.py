@@ -14,7 +14,7 @@ import requests
 # ==================== НАСТРОЙКИ ====================
 app = FastAPI(title="Game School MVP")
 
-# ВЕБХУК BITRIX24 (правильный URL для API)
+# ВЕБХУК BITRIX24
 BITRIX24_WEBHOOK = "https://b24-38mywy.bitrix24.ru/rest/1/373163c75fajqjgk/"
 
 # Коды кастомных полей (из JSON)
